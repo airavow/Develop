@@ -92,6 +92,9 @@ function Login() {
 
       {/* Right side - Login Form */}
       <div style={styles.rightPanel}>
+            <div style={styles.card}>
+              <img src="public/vite.bmp" alt="Image" style={{width: '100%'}} />
+            </div>
         <div style={styles.formContainer}>
           <div style={styles.formHeader}>
             <h2 style={styles.formTitle}>Sign in to your account</h2>
@@ -396,6 +399,14 @@ const styles = {
     color: "#8a2be2",
     textDecoration: "none",
     fontWeight: "500",
+  },
+  card: {
+    position: "relative",
+    height: "6rem",
+    ppadding: "0.75rem 1rem",
+    maxWidth: "450px",
+    width: "15rem",
+    margin: "0 auto"
   },
 }
 

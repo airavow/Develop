@@ -4,6 +4,9 @@ function Develop() {
   return (
     <div style={styles.container}>
       <div style={styles.content}>
+          <div style={styles.card}>
+              <img src="public/vite.bmp" alt="Image" style={{width: '40%',height:"20%"}} />
+            </div>
         <h1 style={styles.title}>NanoDx Site Under Construction</h1>
         <Link to="/login"><button style={styles.button}>
               Login 
@@ -28,24 +31,24 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "92vh",
+    // height: "100vh",
     backgroundColor: "#f5f5f5",
     fontFamily: "Arial, sans-serif",
     textAlign: "center",
-    padding: "1rem", // Added padding for better mobile display
+    // padding: "1rem", // Added padding for better mobile display
   },
   content: {
     width: "100%", // Added for better responsiveness
-    maxWidth: "500px",
+    maxWidth: "700px",
     padding: "0.5rem",
     backgroundColor: "white",
     borderRadius: "8px",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    boxShadow: "0 6px 8px rgba(0, 0, 0, 0.1)",
   },
   title: {
     color: "#333",
     fontSize: "2.5rem",
-    marginBottom: "1rem",
+    marginTop: "0.5rem",    
     wordWrap: "break-word", // Added for text wrapping on small screens
   },
 
@@ -58,21 +61,22 @@ const styles = {
   imageContainer: {
     margin: "2rem auto",
     maxWidth: "100%",
+    maxheight: "100%",
   },
   image: {
     maxWidth: "100%",
     height: "auto",
-    borderRadius: "4px",
+    borderRadius: "8px",
   },
   text: {
     color: "#666",
-    fontSize: "1.2rem",
+    // fontSize: "2.2rem",
     marginBottom: "1rem",
   },
   progressContainer: {
-    height: "10px",
+    height: "20px",
     backgroundColor: "#e0e0e0",
-    borderRadius: "5px",
+    borderRadius: "6px",
     marginTop: "2rem",
     overflow: "hidden",
     width: "100%", // Added to ensure full width
@@ -82,7 +86,13 @@ const styles = {
     width: "60%",
     backgroundColor: "#4CAF50",
     borderRadius: "5px",
-    animation: "progress 2s ease-in-out infinite",
+    animation: "progress 5s ease-in-out infinite",
+  },
+  card: {
+    position: "relative",
+    ppadding: "0.75rem 1rem",
+    maxWidth: "450px",
+    margin: "0 auto"
   },
 }
 
