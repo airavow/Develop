@@ -93,7 +93,7 @@ function Login() {
       {/* Right side - Login Form */}
       <div style={styles.rightPanel}>
             <div style={styles.card}>
-              <img src="public/vite.bmp" alt="Image" style={{width: '100%'}} />
+              <img src="vite.png" alt="Image" style={{width: '100%'}} />
             </div>
         <div style={styles.formContainer}>
           <div style={styles.formHeader}>

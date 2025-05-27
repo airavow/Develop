@@ -5,7 +5,7 @@ function Develop() {
     <div style={styles.container}>
       <div style={styles.content}>
           <div style={styles.card}>
-              <img src="public/vite.bmp" alt="Image" style={{width: '40%',height:"20%"}} />
+              <img src="public/vite.png" alt="Image" style={{width: '40%',height:"20%"}} />
             </div>
         <h1 style={styles.title}>NanoDx Site Under Construction</h1>
         <Link to="/login"><button style={styles.button}>
@@ -14,7 +14,7 @@ function Develop() {
         </Link>    
         {/* Added image container and image */}
         <div style={styles.imageContainer}>
-          <img src="src/assets/image.png" alt="Construction" style={styles.image} />
+          <img src="Image.png" alt="Construction" style={styles.image} />
         </div>
         <p style={styles.text}>We're working hard to bring you an amazing experience.</p>
         <p style={styles.text}>Please check back soon!</p>
