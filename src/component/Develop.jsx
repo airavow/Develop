@@ -5,7 +5,7 @@ function Develop() {
     <div style={styles.container}>
       <div style={styles.content}>
           <div style={styles.card}>
-              <img src="public/vite.png" alt="Image" style={{width: '40%',height:"20%"}} />
+              <img src="vite.png" alt="Image" style={{width: '40%',height:"20%"}} />
             </div>
         <h1 style={styles.title}>NanoDx Site Under Construction</h1>
         <Link to="/login"><button style={styles.button}>
