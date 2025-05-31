@@ -1,1146 +1,2128 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
-import {
-  Activity,
-  AlertCircle,
-  BarChart3,
-  Bell,
-  CircleOff,
-  Command,
-  Cpu,
-  Database,
-  Download,
-  Globe,
-  HardDrive,
-  Hexagon,
-  LineChart,
-  Lock,
-  MessageSquare,
-  Mic,
-  Moon,
-  Radio,
-  RefreshCw,
-  Search,
-  Settings,
-  Shield,
-  Sun,
-  Terminal,
-  Wifi,
-  Zap,
-} from "lucide-react"
+import { useState, useEffect, useRef } from "react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Slider } from "@/components/ui/slider"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-
-export default function Dashboard() {
-  const [theme, setTheme] = useState("dark")
-  const [systemStatus, setSystemStatus] = useState(85)
-  const [cpuUsage, setCpuUsage] = useState(42)
-  const [memoryUsage, setMemoryUsage] = useState(68)
-  const [networkStatus, setNetworkStatus] = useState(92)
-  const [securityLevel, setSecurityLevel] = useState(75)
+function Dashboard() {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [isNavCollapsed, setIsNavCollapsed] = useState(false)
+  const [isDarkMode, setIsDarkMode] = useState(false)
+  const [showUserMenu, setShowUserMenu] = useState(false)
+  const [expandedMenus, setExpandedMenus] = useState({})
   const [currentTime, setCurrentTime] = useState(new Date())
-  const [isLoading, setIsLoading] = useState(true)
+  const [weather] = useState({
+    temp: 72,
+    condition: "Sunny",
+    icon: "☀️",
+  })
 
-  const canvasRef = useRef(null)
+  const notificationRef = useRef(null)
 
-  // Simulate data loading
+  const [stats, setStats] = useState({
+    totalUsers: 12345,
+    revenue: 98765,
+    orders: 1234,
+    growth: 12.5,
+  })
+
+  const [tasks] = useState([
+    { id: 1, title: "Review Q4 Reports", completed: true, priority: "high" },
+    { id: 2, title: "Team Meeting", completed: false, priority: "medium" },
+    { id: 3, title: "Update Documentation", completed: false, priority: "low" },
+    { id: 4, title: "Client Presentation", completed: true, priority: "high" },
+  ])
+
+  const [upcomingEvents] = useState([
+    { id: 1, title: "Team Standup", time: "9:00 AM", date: "Today" },
+    { id: 2, title: "Client Call", time: "2:00 PM", date: "Today" },
+    { id: 3, title: "Project Review", time: "10:00 AM", date: "Tomorrow" },
+  ])
+
+  const [teamMembers] = useState([
+    { id: 1, name: "Alice Johnson", status: "online", avatar: "/placeholder.svg?height=32&width=32" },
+    { id: 2, name: "Bob Smith", status: "away", avatar: "/placeholder.svg?height=32&width=32" },
+    { id: 3, name: "Carol Davis", status: "online", avatar: "/placeholder.svg?height=32&width=32" },
+    { id: 4, name: "David Wilson", status: "offline", avatar: "/placeholder.svg?height=32&width=32" },
+  ])
+
+  const [recentActivities] = useState([
+    {
+      id: 1,
+      user: "John Smith",
+      action: "Created new project",
+      time: "2 minutes ago",
+      type: "create",
+    },
+    {
+      id: 2,
+      user: "Sarah Johnson",
+      action: "Updated user profile",
+      time: "15 minutes ago",
+      type: "update",
+    },
+    {
+      id: 3,
+      user: "Mike Wilson",
+      action: "Deleted old files",
+      time: "1 hour ago",
+      type: "delete",
+    },
+    {
+      id: 4,
+      user: "Emily Davis",
+      action: "Completed task #123",
+      time: "2 hours ago",
+      type: "complete",
+    },
+  ])
+
+  const [chartData] = useState([
+    { month: "Jan", revenue: 400, users: 240 },
+    { month: "Feb", revenue: 300, users: 180 },
+    { month: "Mar", revenue: 600, users: 320 },
+    { month: "Apr", revenue: 800, users: 450 },
+    { month: "May", revenue: 500, users: 280 },
+    { month: "Jun", revenue: 900, users: 520 },
+  ])
+
+  const [performanceMetrics] = useState([
+    { label: "Server Uptime", value: 99.9, color: "#10b981" },
+    { label: "Response Time", value: 85, color: "#f59e0b" },
+    { label: "User Satisfaction", value: 92, color: "#3b82f6" },
+  ])
+
+  const menuItems = [
+    {
+      title: "Dashboard",
+      path: "/dashboard",
+      icon: "📊",
+      shortcut: "Ctrl+D",
+    },
+    {
+      title: "Analytics",
+      path: "/analytics",
+      icon: "📈",
+      shortcut: "Ctrl+A",
+      submenu: [
+        { title: "Overview", path: "/analytics/overview", icon: "📋" },
+        { title: "Revenue", path: "/analytics/revenue", icon: "💰" },
+        { title: "Users", path: "/analytics/users", icon: "👥" },
+        { title: "Traffic", path: "/analytics/traffic", icon: "🚦" },
+      ],
+    },
+    {
+      title: "Users",
+      path: "/users",
+      icon: "👥",
+      shortcut: "Ctrl+U",
+      submenu: [
+        { title: "All Users", path: "/users/all", icon: "👤" },
+        { title: "Active Users", path: "/users/active", icon: "🟢" },
+        { title: "User Roles", path: "/users/roles", icon: "🎭" },
+        { title: "Permissions", path: "/users/permissions", icon: "🔐" },
+      ],
+    },
+    {
+      title: "Projects",
+      path: "/projects",
+      icon: "📁",
+      shortcut: "Ctrl+P",
+      submenu: [
+        { title: "Active Projects", path: "/projects/active", icon: "🚀" },
+        { title: "Completed", path: "/projects/completed", icon: "✅" },
+        { title: "Templates", path: "/projects/templates", icon: "📋" },
+      ],
+    },
+    {
+      title: "Messages",
+      path: "/messages",
+      icon: "💬",
+      badge: 5,
+      submenu: [
+        { title: "Inbox", path: "/messages/inbox", icon: "📥", badge: 3 },
+        { title: "Sent", path: "/messages/sent", icon: "📤" },
+        { title: "Drafts", path: "/messages/drafts", icon: "📝", badge: 2 },
+      ],
+    },
+    {
+      title: "Calendar",
+      path: "/calendar",
+      icon: "📅",
+    },
+    {
+      title: "Files",
+      path: "/files",
+      icon: "📄",
+      submenu: [
+        { title: "Documents", path: "/files/documents", icon: "📄" },
+        { title: "Images", path: "/files/images", icon: "🖼️" },
+        { title: "Videos", path: "/files/videos", icon: "🎥" },
+        { title: "Shared", path: "/files/shared", icon: "🔗" },
+      ],
+    },
+    {
+      title: "Reports",
+      path: "/reports",
+      icon: "📊",
+      submenu: [
+        { title: "Sales Report", path: "/reports/sales", icon: "💹" },
+        { title: "User Report", path: "/reports/users", icon: "👥" },
+        { title: "Performance", path: "/reports/performance", icon: "⚡" },
+      ],
+    },
+    {
+      title: "Settings",
+      path: "/settings",
+      icon: "⚙️",
+      submenu: [
+        { title: "General", path: "/settings/general", icon: "🔧" },
+        { title: "Security", path: "/settings/security", icon: "🔒" },
+        { title: "Integrations", path: "/settings/integrations", icon: "🔌" },
+        { title: "Billing", path: "/settings/billing", icon: "💳" },
+      ],
+    },
+  ]
+
+  const navQuickActions = [
+    { title: "New User", icon: "👤", action: () => navigate("/users/new") },
+    { title: "New Project", icon: "📁", action: () => navigate("/projects/new") },
+    { title: "Send Message", icon: "💬", action: () => navigate("/messages/compose") },
+    { title: "Generate Report", icon: "📊", action: () => navigate("/reports/generate") },
+  ]
+
+  const quickActions = [
+    { title: "Add User", icon: "👤", color: "#3b82f6", action: () => console.log("Add User") },
+    { title: "New Project", icon: "📁", color: "#10b981", action: () => console.log("New Project") },
+    { title: "Send Message", icon: "💬", color: "#f59e0b", action: () => console.log("Send Message") },
+    { title: "Generate Report", icon: "📊", color: "#8b5cf6", action: () => console.log("Generate Report") },
+    { title: "Upload File", icon: "📤", color: "#ef4444", action: () => console.log("Upload File") },
+    { title: "Schedule Meeting", icon: "📅", color: "#06b6d4", action: () => console.log("Schedule Meeting") },
+  ]
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 2000)
-
-    return () => clearTimeout(timer)
-  }, [])
-
-  // Update time
-  useEffect(() => {
-    const interval = setInterval(() => {
+    const timer = setInterval(() => {
       setCurrentTime(new Date())
     }, 1000)
 
-    return () => clearInterval(interval)
-  }, [])
+    const statsTimer = setTimeout(() => {
+      setStats({
+        totalUsers: 12567,
+        revenue: 102340,
+        orders: 1289,
+        growth: 15.2,
+      })
+    }, 1000)
 
-  // Simulate changing data
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCpuUsage(Math.floor(Math.random() * 30) + 30)
-      setMemoryUsage(Math.floor(Math.random() * 20) + 60)
-      setNetworkStatus(Math.floor(Math.random() * 15) + 80)
-      setSystemStatus(Math.floor(Math.random() * 10) + 80)
-    }, 3000)
-
-    return () => clearInterval(interval)
-  }, [])
-
-  // Particle effect
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
-
-    canvas.width = canvas.offsetWidth
-    canvas.height = canvas.offsetHeight
-
-    const particles = []
-    const particleCount = 100
-
-    class Particle {
-      constructor() {
-        this.x = Math.random() * canvas.width
-        this.y = Math.random() * canvas.height
-        this.size = Math.random() * 3 + 1
-        this.speedX = (Math.random() - 0.5) * 0.5
-        this.speedY = (Math.random() - 0.5) * 0.5
-        this.color = `rgba(${Math.floor(Math.random() * 100) + 100}, ${Math.floor(Math.random() * 100) + 150}, ${Math.floor(Math.random() * 55) + 200}, ${Math.random() * 0.5 + 0.2})`
-      }
-
-      update() {
-        this.x += this.speedX
-        this.y += this.speedY
-
-        if (this.x > canvas.width) this.x = 0
-        if (this.x < 0) this.x = canvas.width
-        if (this.y > canvas.height) this.y = 0
-        if (this.y < 0) this.y = canvas.height
-      }
-
-      draw() {
-        if (!ctx) return
-        ctx.fillStyle = this.color
-        ctx.beginPath()
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
-        ctx.fill()
+    const handleClickOutside = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
       }
     }
 
-    for (let i = 0; i < particleCount; i++) {
-      particles.push(new Particle())
-    }
-
-    function animate() {
-      if (!ctx || !canvas) return
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-      for (const particle of particles) {
-        particle.update()
-        particle.draw()
-      }
-
-      requestAnimationFrame(animate)
-    }
-
-    animate()
-
-    const handleResize = () => {
-      if (!canvas) return
-      canvas.width = canvas.offsetWidth
-      canvas.height = canvas.offsetHeight
-    }
-
-    window.addEventListener("resize", handleResize)
+    document.addEventListener("mousedown", handleClickOutside)
 
     return () => {
-      window.removeEventListener("resize", handleResize)
+      clearInterval(timer)
+      clearTimeout(statsTimer)
+      document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [])
 
-  // Toggle theme
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark")
+  const handleLogout = () => {
+    console.log("Logging out...")
+    navigate("/login")
   }
 
-  // Format time
-  const formatTime = (date) => {
-    return date.toLocaleTimeString("en-US", {
-      hour12: false,
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    })
+  const isActive = (path) => {
+    return location.pathname === path || location.pathname.startsWith(path + "/")
   }
 
-  // Format date
-  const formatDate = (date) => {
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    })
+  const toggleSubmenu = (title) => {
+    setExpandedMenus((prev) => ({
+      ...prev,
+      [title]: !prev[title],
+    }))
   }
 
-  return (
-    <>
-      {/* Inline CSS */}
-      <style jsx global>{`
-        /* Tailwind base */
-        @tailwind base;
-        @tailwind components;
-        @tailwind utilities;
-
-        /* Custom animations */
-        @keyframes spin-slow {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        
-        @keyframes spin-slower {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(-360deg); }
-        }
-        
-        @keyframes ping {
-          75%, 100% {
-            transform: scale(2);
-            opacity: 0;
-          }
-        }
-        
-        .animate-spin-slow {
-          animation: spin-slow 3s linear infinite;
-        }
-        
-        .animate-spin-slower {
-          animation: spin-slower 6s linear infinite;
-        }
-        
-        .animate-ping {
-          animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
-        }
-
-        /* Dark mode variables */
-        .dark {
-          --background: 222.2 84% 4.9%;
-          --foreground: 210 40% 98%;
-          --card: 222.2 84% 4.9%;
-          --card-foreground: 210 40% 98%;
-          --popover: 222.2 84% 4.9%;
-          --popover-foreground: 210 40% 98%;
-          --primary: 210 40% 98%;
-          --primary-foreground: 222.2 47.4% 11.2%;
-          --secondary: 217.2 32.6% 17.5%;
-          --secondary-foreground: 210 40% 98%;
-          --muted: 217.2 32.6% 17.5%;
-          --muted-foreground: 215 20.2% 65.1%;
-          --accent: 217.2 32.6% 17.5%;
-          --accent-foreground: 210 40% 98%;
-          --destructive: 0 62.8% 30.6%;
-          --destructive-foreground: 210 40% 98%;
-          --border: 217.2 32.6% 17.5%;
-          --input: 217.2 32.6% 17.5%;
-          --ring: 212.7 26.8% 83.9%;
-        }
-        
-        /* Light mode variables */
-        :root {
-          --background: 0 0% 100%;
-          --foreground: 222.2 84% 4.9%;
-          --card: 0 0% 100%;
-          --card-foreground: 222.2 84% 4.9%;
-          --popover: 0 0% 100%;
-          --popover-foreground: 222.2 84% 4.9%;
-          --primary: 222.2 47.4% 11.2%;
-          --primary-foreground: 210 40% 98%;
-          --secondary: 210 40% 96.1%;
-          --secondary-foreground: 222.2 47.4% 11.2%;
-          --muted: 210 40% 96.1%;
-          --muted-foreground: 215.4 16.3% 46.9%;
-          --accent: 210 40% 96.1%;
-          --accent-foreground: 222.2 47.4% 11.2%;
-          --destructive: 0 84.2% 60.2%;
-          --destructive-foreground: 210 40% 98%;
-          --border: 214.3 31.8% 91.4%;
-          --input: 214.3 31.8% 91.4%;
-          --ring: 222.2 84% 4.9%;
-          --radius: 0.5rem;
-        }
-      `}</style>
-
-      <div
-        className={`${theme} min-h-screen bg-gradient-to-br from-black to-slate-900 text-slate-100 relative overflow-hidden`}
-      >
-        {/* Background particle effect */}
-        <canvas ref={canvasRef} className="absolute inset-0 w-full h-full opacity-30" />
-
-        {/* Loading overlay */}
-        {isLoading && (
-          <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50">
-            <div className="flex flex-col items-center">
-              <div className="relative w-24 h-24">
-                <div className="absolute inset-0 border-4 border-cyan-500/30 rounded-full animate-ping"></div>
-                <div className="absolute inset-2 border-4 border-t-cyan-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
-                <div className="absolute inset-4 border-4 border-r-purple-500 border-t-transparent border-b-transparent border-l-transparent rounded-full animate-spin-slow"></div>
-                <div className="absolute inset-6 border-4 border-b-blue-500 border-t-transparent border-r-transparent border-l-transparent rounded-full animate-spin-slower"></div>
-                <div className="absolute inset-8 border-4 border-l-green-500 border-t-transparent border-r-transparent border-b-transparent rounded-full animate-spin"></div>
-              </div>
-              <div className="mt-4 text-cyan-500 font-mono text-sm tracking-wider">SYSTEM INITIALIZING</div>
-            </div>
-          </div>
-        )}
-
-        <div className="container mx-auto p-4 relative z-10">
-          {/* Header */}
-          <header className="flex items-center justify-between py-4 border-b border-slate-700/50 mb-6">
-            <div className="flex items-center space-x-2">
-              <Hexagon className="h-8 w-8 text-cyan-500" />
-              <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                NEXUS OS
-              </span>
-            </div>
-
-            <div className="flex items-center space-x-6">
-              <div className="hidden md:flex items-center space-x-1 bg-slate-800/50 rounded-full px-3 py-1.5 border border-slate-700/50 backdrop-blur-sm">
-                <Search className="h-4 w-4 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search systems..."
-                  className="bg-transparent border-none focus:outline-none text-sm w-40 placeholder:text-slate-500"
-                />
-              </div>
-
-              <div className="flex items-center space-x-3">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon" className="relative text-slate-400 hover:text-slate-100">
-                        <Bell className="h-5 w-5" />
-                        <span className="absolute -top-1 -right-1 h-2 w-2 bg-cyan-500 rounded-full animate-pulse"></span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Notifications</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={toggleTheme}
-                        className="text-slate-400 hover:text-slate-100"
-                      >
-                        {theme === "dark" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Toggle theme</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-
-                <Avatar>
-                  <AvatarImage src="/placeholder.svg?height=40&width=40" alt="User" />
-                  <AvatarFallback className="bg-slate-700 text-cyan-500">CM</AvatarFallback>
-                </Avatar>
-              </div>
-            </div>
-          </header>
-
-          {/* Main content */}
-          <div className="grid grid-cols-12 gap-6">
-            {/* Sidebar */}
-            <div className="col-span-12 md:col-span-3 lg:col-span-2">
-              <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm h-full">
-                <CardContent className="p-4">
-                  <nav className="space-y-2">
-                    <NavItem icon={Command} label="Dashboard" active />
-                    <NavItem icon={Activity} label="Diagnostics" />
-                    <NavItem icon={Database} label="Data Center" />
-                    <NavItem icon={Globe} label="Network" />
-                    <NavItem icon={Shield} label="Security" />
-                    <NavItem icon={Terminal} label="Console" />
-                    <NavItem icon={MessageSquare} label="Communications" />
-                    <NavItem icon={Settings} label="Settings" />
-                  </nav>
-
-                  <div className="mt-8 pt-6 border-t border-slate-700/50">
-                    <div className="text-xs text-slate-500 mb-2 font-mono">SYSTEM STATUS</div>
-                    <div className="space-y-3">
-                      <StatusItem label="Core Systems" value={systemStatus} color="cyan" />
-                      <StatusItem label="Security" value={securityLevel} color="green" />
-                      <StatusItem label="Network" value={networkStatus} color="blue" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Main dashboard */}
-            <div className="col-span-12 md:col-span-9 lg:col-span-7">
-              <div className="grid gap-6">
-                {/* System overview */}
-                <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm overflow-hidden">
-                  <CardHeader className="border-b border-slate-700/50 pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-slate-100 flex items-center">
-                        <Activity className="mr-2 h-5 w-5 text-cyan-500" />
-                        System Overview
-                      </CardTitle>
-                      <div className="flex items-center space-x-2">
-                        <Badge variant="outline" className="bg-slate-800/50 text-cyan-400 border-cyan-500/50 text-xs">
-                          <div className="h-1.5 w-1.5 rounded-full bg-cyan-500 mr-1 animate-pulse"></div>
-                          LIVE
-                        </Badge>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400">
-                          <RefreshCw className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <MetricCard
-                        title="CPU Usage"
-                        value={cpuUsage}
-                        icon={Cpu}
-                        trend="up"
-                        color="cyan"
-                        detail="3.8 GHz | 12 Cores"
-                      />
-                      <MetricCard
-                        title="Memory"
-                        value={memoryUsage}
-                        icon={HardDrive}
-                        trend="stable"
-                        color="purple"
-                        detail="16.4 GB / 24 GB"
-                      />
-                      <MetricCard
-                        title="Network"
-                        value={networkStatus}
-                        icon={Wifi}
-                        trend="down"
-                        color="blue"
-                        detail="1.2 GB/s | 42ms"
-                      />
-                    </div>
-
-                    <div className="mt-8">
-                      <Tabs defaultValue="performance" className="w-full">
-                        <div className="flex items-center justify-between mb-4">
-                          <TabsList className="bg-slate-800/50 p-1">
-                            <TabsTrigger
-                              value="performance"
-                              className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-400"
-                            >
-                              Performance
-                            </TabsTrigger>
-                            <TabsTrigger
-                              value="processes"
-                              className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-400"
-                            >
-                              Processes
-                            </TabsTrigger>
-                            <TabsTrigger
-                              value="storage"
-                              className="data-[state=active]:bg-slate-700 data-[state=active]:text-cyan-400"
-                            >
-                              Storage
-                            </TabsTrigger>
-                          </TabsList>
-
-                          <div className="flex items-center space-x-2 text-xs text-slate-400">
-                            <div className="flex items-center">
-                              <div className="h-2 w-2 rounded-full bg-cyan-500 mr-1"></div>
-                              CPU
-                            </div>
-                            <div className="flex items-center">
-                              <div className="h-2 w-2 rounded-full bg-purple-500 mr-1"></div>
-                              Memory
-                            </div>
-                            <div className="flex items-center">
-                              <div className="h-2 w-2 rounded-full bg-blue-500 mr-1"></div>
-                              Network
-                            </div>
-                          </div>
-                        </div>
-
-                        <TabsContent value="performance" className="mt-0">
-                          <div className="h-64 w-full relative bg-slate-800/30 rounded-lg border border-slate-700/50 overflow-hidden">
-                            <PerformanceChart />
-                            <div className="absolute bottom-4 right-4 bg-slate-900/80 backdrop-blur-sm rounded-md px-3 py-2 border border-slate-700/50">
-                              <div className="text-xs text-slate-400">System Load</div>
-                              <div className="text-lg font-mono text-cyan-400">{cpuUsage}%</div>
-                            </div>
-                          </div>
-                        </TabsContent>
-
-                        <TabsContent value="processes" className="mt-0">
-                          <div className="bg-slate-800/30 rounded-lg border border-slate-700/50 overflow-hidden">
-                            <div className="grid grid-cols-12 text-xs text-slate-400 p-3 border-b border-slate-700/50 bg-slate-800/50">
-                              <div className="col-span-1">PID</div>
-                              <div className="col-span-4">Process</div>
-                              <div className="col-span-2">User</div>
-                              <div className="col-span-2">CPU</div>
-                              <div className="col-span-2">Memory</div>
-                              <div className="col-span-1">Status</div>
-                            </div>
-
-                            <div className="divide-y divide-slate-700/30">
-                              <ProcessRow
-                                pid="1024"
-                                name="system_core.exe"
-                                user="SYSTEM"
-                                cpu={12.4}
-                                memory={345}
-                                status="running"
-                              />
-                              <ProcessRow
-                                pid="1842"
-                                name="nexus_service.exe"
-                                user="SYSTEM"
-                                cpu={8.7}
-                                memory={128}
-                                status="running"
-                              />
-                              <ProcessRow
-                                pid="2156"
-                                name="security_monitor.exe"
-                                user="ADMIN"
-                                cpu={5.2}
-                                memory={96}
-                                status="running"
-                              />
-                              <ProcessRow
-                                pid="3012"
-                                name="network_manager.exe"
-                                user="SYSTEM"
-                                cpu={3.8}
-                                memory={84}
-                                status="running"
-                              />
-                              <ProcessRow
-                                pid="4268"
-                                name="user_interface.exe"
-                                user="USER"
-                                cpu={15.3}
-                                memory={256}
-                                status="running"
-                              />
-                              <ProcessRow
-                                pid="5124"
-                                name="data_analyzer.exe"
-                                user="ADMIN"
-                                cpu={22.1}
-                                memory={512}
-                                status="running"
-                              />
-                            </div>
-                          </div>
-                        </TabsContent>
-
-                        <TabsContent value="storage" className="mt-0">
-                          <div className="bg-slate-800/30 rounded-lg border border-slate-700/50 p-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <StorageItem name="System Drive (C:)" total={512} used={324} type="SSD" />
-                              <StorageItem name="Data Drive (D:)" total={2048} used={1285} type="HDD" />
-                              <StorageItem name="Backup Drive (E:)" total={4096} used={1865} type="HDD" />
-                              <StorageItem name="External Drive (F:)" total={1024} used={210} type="SSD" />
-                            </div>
-                          </div>
-                        </TabsContent>
-                      </Tabs>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Security & Alerts */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-slate-100 flex items-center text-base">
-                        <Shield className="mr-2 h-5 w-5 text-green-500" />
-                        Security Status
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="text-sm text-slate-400">Firewall</div>
-                          <Badge className="bg-green-500/20 text-green-400 border-green-500/50">Active</Badge>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="text-sm text-slate-400">Intrusion Detection</div>
-                          <Badge className="bg-green-500/20 text-green-400 border-green-500/50">Active</Badge>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="text-sm text-slate-400">Encryption</div>
-                          <Badge className="bg-green-500/20 text-green-400 border-green-500/50">Active</Badge>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="text-sm text-slate-400">Threat Database</div>
-                          <div className="text-sm text-cyan-400">
-                            Updated <span className="text-slate-500">12 min ago</span>
-                          </div>
-                        </div>
-
-                        <div className="pt-2 mt-2 border-t border-slate-700/50">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="text-sm font-medium">Security Level</div>
-                            <div className="text-sm text-cyan-400">{securityLevel}%</div>
-                          </div>
-                          <Progress value={securityLevel} className="h-2 bg-slate-700">
-                            <div
-                              className="h-full bg-gradient-to-r from-green-500 to-cyan-500 rounded-full"
-                              style={{ width: `${securityLevel}%` }}
-                            />
-                          </Progress>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-slate-100 flex items-center text-base">
-                        <AlertCircle className="mr-2 h-5 w-5 text-amber-500" />
-                        System Alerts
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        <AlertItem
-                          title="Security Scan Complete"
-                          time="14:32:12"
-                          description="No threats detected in system scan"
-                          type="info"
-                        />
-                        <AlertItem
-                          title="Bandwidth Spike Detected"
-                          time="13:45:06"
-                          description="Unusual network activity on port 443"
-                          type="warning"
-                        />
-                        <AlertItem
-                          title="System Update Available"
-                          time="09:12:45"
-                          description="Version 12.4.5 ready to install"
-                          type="update"
-                        />
-                        <AlertItem
-                          title="Backup Completed"
-                          time="04:30:00"
-                          description="Incremental backup to drive E: successful"
-                          type="success"
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Communications */}
-                <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm">
-                  <CardHeader className="pb-2 flex flex-row items-center justify-between">
-                    <CardTitle className="text-slate-100 flex items-center text-base">
-                      <MessageSquare className="mr-2 h-5 w-5 text-blue-500" />
-                      Communications Log
-                    </CardTitle>
-                    <Badge variant="outline" className="bg-slate-800/50 text-blue-400 border-blue-500/50">
-                      4 New Messages
-                    </Badge>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <CommunicationItem
-                        sender="System Administrator"
-                        time="15:42:12"
-                        message="Scheduled maintenance will occur at 02:00. All systems will be temporarily offline."
-                        avatar="/placeholder.svg?height=40&width=40"
-                        unread
-                      />
-                      <CommunicationItem
-                        sender="Security Module"
-                        time="14:30:45"
-                        message="Unusual login attempt blocked from IP 192.168.1.45. Added to watchlist."
-                        avatar="/placeholder.svg?height=40&width=40"
-                        unread
-                      />
-                      <CommunicationItem
-                        sender="Network Control"
-                        time="12:15:33"
-                        message="Bandwidth allocation adjusted for priority services during peak hours."
-                        avatar="/placeholder.svg?height=40&width=40"
-                        unread
-                      />
-                      <CommunicationItem
-                        sender="Data Center"
-                        time="09:05:18"
-                        message="Backup verification complete. All data integrity checks passed."
-                        avatar="/placeholder.svg?height=40&width=40"
-                        unread
-                      />
-                    </div>
-                  </CardContent>
-                  <CardFooter className="border-t border-slate-700/50 pt-4">
-                    <div className="flex items-center w-full space-x-2">
-                      <input
-                        type="text"
-                        placeholder="Type a message..."
-                        className="flex-1 bg-slate-800/50 border border-slate-700/50 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500"
-                      />
-                      <Button size="icon" className="bg-blue-600 hover:bg-blue-700">
-                        <Mic className="h-4 w-4" />
-                      </Button>
-                      <Button size="icon" className="bg-cyan-600 hover:bg-cyan-700">
-                        <MessageSquare className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardFooter>
-                </Card>
-              </div>
-            </div>
-
-            {/* Right sidebar */}
-            <div className="col-span-12 lg:col-span-3">
-              <div className="grid gap-6">
-                {/* System time */}
-                <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm overflow-hidden">
-                  <CardContent className="p-0">
-                    <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-6 border-b border-slate-700/50">
-                      <div className="text-center">
-                        <div className="text-xs text-slate-500 mb-1 font-mono">SYSTEM TIME</div>
-                        <div className="text-3xl font-mono text-cyan-400 mb-1">{formatTime(currentTime)}</div>
-                        <div className="text-sm text-slate-400">{formatDate(currentTime)}</div>
-                      </div>
-                    </div>
-                    <div className="p-4">
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-slate-800/50 rounded-md p-3 border border-slate-700/50">
-                          <div className="text-xs text-slate-500 mb-1">Uptime</div>
-                          <div className="text-sm font-mono text-slate-200">14d 06:42:18</div>
-                        </div>
-                        <div className="bg-slate-800/50 rounded-md p-3 border border-slate-700/50">
-                          <div className="text-xs text-slate-500 mb-1">Time Zone</div>
-                          <div className="text-sm font-mono text-slate-200">UTC-08:00</div>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Quick actions */}
-                <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-slate-100 text-base">Quick Actions</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 gap-3">
-                      <ActionButton icon={Shield} label="Security Scan" />
-                      <ActionButton icon={RefreshCw} label="Sync Data" />
-                      <ActionButton icon={Download} label="Backup" />
-                      <ActionButton icon={Terminal} label="Console" />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Resource allocation */}
-                <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-slate-100 text-base">Resource Allocation</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="text-sm text-slate-400">Processing Power</div>
-                          <div className="text-xs text-cyan-400">42% allocated</div>
-                        </div>
-                        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full"
-                            style={{ width: "42%" }}
-                          ></div>
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="text-sm text-slate-400">Memory Allocation</div>
-                          <div className="text-xs text-purple-400">68% allocated</div>
-                        </div>
-                        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
-                            style={{ width: "68%" }}
-                          ></div>
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="text-sm text-slate-400">Network Bandwidth</div>
-                          <div className="text-xs text-blue-400">35% allocated</div>
-                        </div>
-                        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"
-                            style={{ width: "35%" }}
-                          ></div>
-                        </div>
-                      </div>
-
-                      <div className="pt-2 border-t border-slate-700/50">
-                        <div className="flex items-center justify-between text-sm">
-                          <div className="text-slate-400">Priority Level</div>
-                          <div className="flex items-center">
-                            <Slider defaultValue={[3]} max={5} step={1} className="w-24 mr-2" />
-                            <span className="text-cyan-400">3/5</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Environment controls */}
-                <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-slate-100 text-base">Environment Controls</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <Radio className="text-cyan-500 mr-2 h-4 w-4" />
-                          <Label className="text-sm text-slate-400">Power Management</Label>
-                        </div>
-                        <Switch />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <Lock className="text-cyan-500 mr-2 h-4 w-4" />
-                          <Label className="text-sm text-slate-400">Security Protocol</Label>
-                        </div>
-                        <Switch defaultChecked />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <Zap className="text-cyan-500 mr-2 h-4 w-4" />
-                          <Label className="text-sm text-slate-400">Power Saving Mode</Label>
-                        </div>
-                        <Switch />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <CircleOff className="text-cyan-500 mr-2 h-4 w-4" />
-                          <Label className="text-sm text-slate-400">Auto Shutdown</Label>
-                        </div>
-                        <Switch defaultChecked />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  )
-}
-
-// Component for nav items
-function NavItem({ icon: Icon, label, active }) {
-  return (
-    <Button
-      variant="ghost"
-      className={`w-full justify-start ${active ? "bg-slate-800/70 text-cyan-400" : "text-slate-400 hover:text-slate-100"}`}
-    >
-      <Icon className="mr-2 h-4 w-4" />
-      {label}
-    </Button>
-  )
-}
-
-// Component for status items
-function StatusItem({ label, value, color }) {
-  const getColor = () => {
-    switch (color) {
-      case "cyan":
-        return "from-cyan-500 to-blue-500"
-      case "green":
-        return "from-green-500 to-emerald-500"
-      case "blue":
-        return "from-blue-500 to-indigo-500"
-      case "purple":
-        return "from-purple-500 to-pink-500"
-      default:
-        return "from-cyan-500 to-blue-500"
-    }
-  }
-
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-1">
-        <div className="text-xs text-slate-400">{label}</div>
-        <div className="text-xs text-slate-400">{value}%</div>
-      </div>
-      <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
-        <div className={`h-full bg-gradient-to-r ${getColor()} rounded-full`} style={{ width: `${value}%` }}></div>
-      </div>
-    </div>
-  )
-}
-
-// Component for metric cards
-function MetricCard({ title, value, icon: Icon, trend, color, detail }) {
-  const getColor = () => {
-    switch (color) {
-      case "cyan":
-        return "from-cyan-500 to-blue-500 border-cyan-500/30"
-      case "green":
-        return "from-green-500 to-emerald-500 border-green-500/30"
-      case "blue":
-        return "from-blue-500 to-indigo-500 border-blue-500/30"
-      case "purple":
-        return "from-purple-500 to-pink-500 border-purple-500/30"
-      default:
-        return "from-cyan-500 to-blue-500 border-cyan-500/30"
-    }
-  }
-
-  const getTrendIcon = () => {
-    switch (trend) {
-      case "up":
-        return <BarChart3 className="h-4 w-4 text-amber-500" />
-      case "down":
-        return <BarChart3 className="h-4 w-4 rotate-180 text-green-500" />
-      case "stable":
-        return <LineChart className="h-4 w-4 text-blue-500" />
-      default:
-        return null
-    }
-  }
-
-  return (
-    <div className={`bg-slate-800/50 rounded-lg border ${getColor()} p-4 relative overflow-hidden`}>
-      <div className="flex items-center justify-between mb-2">
-        <div className="text-sm text-slate-400">{title}</div>
-        <Icon className={`h-5 w-5 text-${color}-500`} />
-      </div>
-      <div className="text-2xl font-bold mb-1 bg-gradient-to-r bg-clip-text text-transparent from-slate-100 to-slate-300">
-        {value}%
-      </div>
-      <div className="text-xs text-slate-500">{detail}</div>
-      <div className="absolute bottom-2 right-2 flex items-center">{getTrendIcon()}</div>
-      <div className="absolute -bottom-6 -right-6 h-16 w-16 rounded-full bg-gradient-to-r opacity-20 blur-xl from-cyan-500 to-blue-500"></div>
-    </div>
-  )
-}
-
-// Performance chart component
-function PerformanceChart() {
-  return (
-    <div className="h-full w-full flex items-end justify-between px-4 pt-4 pb-8 relative">
-      {/* Y-axis labels */}
-      <div className="absolute left-2 top-0 h-full flex flex-col justify-between py-4">
-        <div className="text-xs text-slate-500">100%</div>
-        <div className="text-xs text-slate-500">75%</div>
-        <div className="text-xs text-slate-500">50%</div>
-        <div className="text-xs text-slate-500">25%</div>
-        <div className="text-xs text-slate-500">0%</div>
-      </div>
-
-      {/* X-axis grid lines */}
-      <div className="absolute left-0 right-0 top-0 h-full flex flex-col justify-between py-4 px-10">
-        <div className="border-b border-slate-700/30 w-full"></div>
-        <div className="border-b border-slate-700/30 w-full"></div>
-        <div className="border-b border-slate-700/30 w-full"></div>
-        <div className="border-b border-slate-700/30 w-full"></div>
-        <div className="border-b border-slate-700/30 w-full"></div>
-      </div>
-
-      {/* Chart bars */}
-      <div className="flex-1 h-full flex items-end justify-between px-2 z-10">
-        {Array.from({ length: 24 }).map((_, i) => {
-          const cpuHeight = Math.floor(Math.random() * 60) + 20
-          const memHeight = Math.floor(Math.random() * 40) + 40
-          const netHeight = Math.floor(Math.random() * 30) + 30
-
-          return (
-            <div key={i} className="flex space-x-0.5">
-              <div
-                className="w-1 bg-gradient-to-t from-cyan-500 to-cyan-400 rounded-t-sm"
-                style={{ height: `${cpuHeight}%` }}
-              ></div>
-              <div
-                className="w-1 bg-gradient-to-t from-purple-500 to-purple-400 rounded-t-sm"
-                style={{ height: `${memHeight}%` }}
-              ></div>
-              <div
-                className="w-1 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-sm"
-                style={{ height: `${netHeight}%` }}
-              ></div>
-            </div>
-          )
-        })}
-      </div>
-
-      {/* X-axis labels */}
-      <div className="absolute bottom-0 left-0 right-0 flex justify-between px-10">
-        <div className="text-xs text-slate-500">00:00</div>
-        <div className="text-xs text-slate-500">06:00</div>
-        <div className="text-xs text-slate-500">12:00</div>
-        <div className="text-xs text-slate-500">18:00</div>
-        <div className="text-xs text-slate-500">24:00</div>
-      </div>
-    </div>
-  )
-}
-
-// Process row component
-function ProcessRow({ pid, name, user, cpu, memory, status }) {
-  return (
-    <div className="grid grid-cols-12 py-2 px-3 text-sm hover:bg-slate-800/50">
-      <div className="col-span-1 text-slate-500">{pid}</div>
-      <div className="col-span-4 text-slate-300">{name}</div>
-      <div className="col-span-2 text-slate-400">{user}</div>
-      <div className="col-span-2 text-cyan-400">{cpu}%</div>
-      <div className="col-span-2 text-purple-400">{memory} MB</div>
-      <div className="col-span-1">
-        <Badge variant="outline" className="bg-green-500/10 text-green-400 border-green-500/30 text-xs">
-          {status}
-        </Badge>
-      </div>
-    </div>
-  )
-}
-
-// Storage item component
-function StorageItem({ name, total, used, type }) {
-  const percentage = Math.round((used / total) * 100)
-
-  return (
-    <div className="bg-slate-800/50 rounded-md p-3 border border-slate-700/50">
-      <div className="flex items-center justify-between mb-2">
-        <div className="text-sm text-slate-300">{name}</div>
-        <Badge variant="outline" className="bg-slate-700/50 text-slate-300 border-slate-600/50 text-xs">
-          {type}
-        </Badge>
-      </div>
-      <div className="mb-2">
-        <div className="flex items-center justify-between mb-1">
-          <div className="text-xs text-slate-500">
-            {used} GB / {total} GB
-          </div>
-          <div className="text-xs text-slate-400">{percentage}%</div>
-        </div>
-        <Progress value={percentage} className="h-1.5 bg-slate-700">
-          <div
-            className={`h-full rounded-full ${
-              percentage > 90 ? "bg-red-500" : percentage > 70 ? "bg-amber-500" : "bg-cyan-500"
-            }`}
-            style={{ width: `${percentage}%` }}
-          />
-        </Progress>
-      </div>
-      <div className="flex items-center justify-between text-xs">
-        <div className="text-slate-500">Free: {total - used} GB</div>
-        <Button variant="ghost" size="sm" className="h-6 text-xs px-2 text-slate-400 hover:text-slate-100">
-          Details
-        </Button>
-      </div>
-    </div>
-  )
-}
-
-// Alert item component
-function AlertItem({ title, time, description, type }) {
-  const getTypeStyles = () => {
+  const getActivityIcon = (type) => {
     switch (type) {
-      case "info":
-        return { icon: Info, color: "text-blue-500 bg-blue-500/10 border-blue-500/30" }
-      case "warning":
-        return { icon: AlertCircle, color: "text-amber-500 bg-amber-500/10 border-amber-500/30" }
-      case "error":
-        return { icon: AlertCircle, color: "text-red-500 bg-red-500/10 border-red-500/30" }
-      case "success":
-        return { icon: Check, color: "text-green-500 bg-green-500/10 border-green-500/30" }
+      case "create":
+        return "➕"
       case "update":
-        return { icon: Download, color: "text-cyan-500 bg-cyan-500/10 border-cyan-500/30" }
+        return "✏️"
+      case "delete":
+        return "🗑️"
+      case "complete":
+        return "✅"
       default:
-        return { icon: Info, color: "text-blue-500 bg-blue-500/10 border-blue-500/30" }
+        return "📝"
     }
   }
 
-  const { icon: Icon, color } = getTypeStyles()
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "online":
+        return "#10b981"
+      case "away":
+        return "#f59e0b"
+      case "offline":
+        return "#6b7280"
+      default:
+        return "#6b7280"
+    }
+  }
 
-  return (
-    <div className="flex items-start space-x-3">
-      <div className={`mt-0.5 p-1 rounded-full ${color.split(" ")[1]} ${color.split(" ")[2]}`}>
-        <Icon className={`h-3 w-3 ${color.split(" ")[0]}`} />
-      </div>
-      <div>
-        <div className="flex items-center">
-          <div className="text-sm font-medium text-slate-200">{title}</div>
-          <div className="ml-2 text-xs text-slate-500">{time}</div>
-        </div>
-        <div className="text-xs text-slate-400">{description}</div>
-      </div>
-    </div>
-  )
-}
+  const completedTasks = tasks.filter((task) => task.completed).length
+  const taskCompletionRate = (completedTasks / tasks.length) * 100
 
-// Communication item component
-function CommunicationItem({ sender, time, message, avatar, unread }) {
-  return (
-    <div className={`flex space-x-3 p-2 rounded-md ${unread ? "bg-slate-800/50 border border-slate-700/50" : ""}`}>
-      <Avatar className="h-8 w-8">
-        <AvatarImage src={avatar || "/placeholder.svg"} alt={sender} />
-        <AvatarFallback className="bg-slate-700 text-cyan-500">{sender.charAt(0)}</AvatarFallback>
-      </Avatar>
-      <div className="flex-1">
-        <div className="flex items-center justify-between">
-          <div className="text-sm font-medium text-slate-200">{sender}</div>
-          <div className="text-xs text-slate-500">{time}</div>
+  const themeStyles = isDarkMode ? darkTheme : lightTheme
+
+  // Navigation Component
+  const Navigation = () => (
+    <div
+      style={{
+        ...styles.sidebar,
+        ...themeStyles.sidebar,
+        width: isNavCollapsed ? "80px" : "320px",
+      }}
+    >
+      {/* Header */}
+      <div style={{ ...styles.header, ...themeStyles.header }}>
+        <div style={styles.logo}>
+          {!isNavCollapsed && (
+            <>
+              <img src="/placeholder.svg?height=32&width=32" alt="Logo" style={styles.logoImage} />
+              <span style={{ ...styles.logoText, ...themeStyles.logoText }}>DashBoard Pro</span>
+            </>
+          )}
+          {isNavCollapsed && <span style={{ ...styles.logoCollapsed, ...themeStyles.logoText }}>DP</span>}
         </div>
-        <div className="text-xs text-slate-400 mt-1">{message}</div>
+        <div style={styles.headerActions}>
+          <button
+            style={{ ...styles.collapseButton, ...themeStyles.iconButton }}
+            onClick={() => setIsNavCollapsed(!isNavCollapsed)}
+          >
+            {isNavCollapsed ? "→" : "←"}
+          </button>
+        </div>
       </div>
-      {unread && (
-        <div className="flex-shrink-0 self-center">
-          <div className="h-2 w-2 rounded-full bg-cyan-500"></div>
+
+      {/* Quick Actions */}
+      {!isNavCollapsed && (
+        <div style={{ ...styles.quickActionsContainer, ...themeStyles.quickActions }}>
+          <div style={{ ...styles.quickActionsTitle, ...themeStyles.subText }}>Quick Actions</div>
+          <div style={styles.quickActionsGrid}>
+            {navQuickActions.map((action, index) => (
+              <button
+                key={index}
+                style={{ ...styles.quickActionButton, ...themeStyles.quickActionButton }}
+                onClick={action.action}
+                title={action.title}
+              >
+                <span style={styles.quickActionIcon}>{action.icon}</span>
+                <span style={styles.quickActionText}>{action.title}</span>
+              </button>
+            ))}
+          </div>
         </div>
       )}
+
+      {/* Navigation Menu */}
+      <nav style={styles.nav}>
+        <ul style={styles.menuList}>
+          {menuItems.map((item) => (
+            <li key={item.path} style={styles.menuItem}>
+              <div style={styles.menuItemContainer}>
+                <Link
+                  to={item.submenu ? "#" : item.path}
+                  style={{
+                    ...styles.menuLink,
+                    ...themeStyles.menuLink,
+                    ...(isActive(item.path) ? { ...styles.menuLinkActive, ...themeStyles.menuLinkActive } : {}),
+                  }}
+                  title={isNavCollapsed ? `${item.title} ${item.shortcut || ""}` : ""}
+                  onClick={(e) => {
+                    if (item.submenu) {
+                      e.preventDefault()
+                      toggleSubmenu(item.title)
+                    }
+                  }}
+                >
+                  <span style={styles.menuIcon}>{item.icon}</span>
+                  {!isNavCollapsed && (
+                    <>
+                      <span style={styles.menuText}>{item.title}</span>
+                      <div style={styles.menuRight}>
+                        {item.badge && <span style={styles.menuBadge}>{item.badge}</span>}
+                        {item.submenu && (
+                          <span
+                            style={{
+                              ...styles.submenuArrow,
+                              transform: expandedMenus[item.title] ? "rotate(90deg)" : "rotate(0deg)",
+                            }}
+                          >
+                            ▶
+                          </span>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </Link>
+
+                {/* Submenu */}
+                {item.submenu && !isNavCollapsed && expandedMenus[item.title] && (
+                  <ul style={{ ...styles.submenu, ...themeStyles.submenu }}>
+                    {item.submenu.map((subItem) => (
+                      <li key={subItem.path} style={styles.submenuItem}>
+                        <Link
+                          to={subItem.path}
+                          style={{
+                            ...styles.submenuLink,
+                            ...themeStyles.submenuLink,
+                            ...(isActive(subItem.path)
+                              ? { ...styles.submenuLinkActive, ...themeStyles.submenuLinkActive }
+                              : {}),
+                          }}
+                        >
+                          <span style={styles.submenuIcon}>{subItem.icon}</span>
+                          <span style={styles.submenuText}>{subItem.title}</span>
+                          {subItem.badge && <span style={styles.submenuBadge}>{subItem.badge}</span>}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      {/* User Profile */}
+      <div style={{ ...styles.userSection, ...themeStyles.userSection }}>
+        <div
+          style={{ ...styles.userProfile, ...themeStyles.userProfile }}
+          onClick={() => setShowUserMenu(!showUserMenu)}
+        >
+          <div style={styles.userAvatar}>
+            <img src="/placeholder.svg?height=40&width=40" alt="User Avatar" style={styles.avatarImage} />
+            <div style={styles.onlineStatus}></div>
+          </div>
+          {!isNavCollapsed && (
+            <div style={styles.userInfo}>
+              <div style={{ ...styles.userName, ...themeStyles.text }}>John Doe</div>
+              <div style={{ ...styles.userEmail, ...themeStyles.subText }}>john@example.com</div>
+              <div style={styles.userStatus}>🟢 Online</div>
+            </div>
+          )}
+          {!isNavCollapsed && (
+            <span style={{ ...styles.dropdownIcon, ...themeStyles.subText }}>{showUserMenu ? "▲" : "▼"}</span>
+          )}
+        </div>
+
+        {/* User Dropdown Menu */}
+        {showUserMenu && !isNavCollapsed && (
+          <div style={{ ...styles.userMenu, ...themeStyles.panel }}>
+            <Link to="/profile" style={{ ...styles.userMenuItem, ...themeStyles.menuItem }}>
+              👤 Profile
+            </Link>
+            <Link to="/account" style={{ ...styles.userMenuItem, ...themeStyles.menuItem }}>
+              🔧 Account Settings
+            </Link>
+            <Link to="/preferences" style={{ ...styles.userMenuItem, ...themeStyles.menuItem }}>
+              🎨 Preferences
+            </Link>
+            <Link to="/billing" style={{ ...styles.userMenuItem, ...themeStyles.menuItem }}>
+              💳 Billing
+            </Link>
+            <div style={styles.divider}></div>
+            <Link to="/help" style={{ ...styles.userMenuItem, ...themeStyles.menuItem }}>
+              ❓ Help & Support
+            </Link>
+            <div style={styles.divider}></div>
+            <button style={{ ...styles.logoutButton, ...themeStyles.logoutButton }} onClick={handleLogout}>
+              🚪 Logout
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+
+  return (
+    <div style={{ ...styles.container, ...themeStyles.container }}>
+      <Navigation />
+
+      <div
+        style={{
+          ...styles.mainContent,
+          ...themeStyles.mainContent,
+          marginLeft: isNavCollapsed ? "80px" : "320px",
+        }}
+      >
+        {/* Enhanced Header */}
+        <header style={{ ...styles.dashboardHeader, ...themeStyles.header }}>
+          <div style={styles.headerLeft}>
+            <h1 style={{ ...styles.pageTitle, ...themeStyles.pageTitle }}>Dashboard</h1>
+            <p style={{ ...styles.pageSubtitle, ...themeStyles.pageSubtitle }}>
+              Welcome back, John Doe! Here's what's happening today.
+            </p>
+            <div style={styles.headerInfo}>
+              <span style={styles.currentTime}>🕐 {currentTime.toLocaleTimeString()}</span>
+              <span style={styles.currentDate}>
+                📅{" "}
+                {currentTime.toLocaleDateString("en-US", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </span>
+              <span style={styles.weather}>
+                {weather.icon} {weather.temp}°F {weather.condition}
+              </span>
+            </div>
+          </div>
+          <div style={styles.headerActions}>
+            <div style={styles.searchContainer}>
+              <input
+                type="text"
+                placeholder="Search dashboard..."
+                style={{ ...styles.searchInput, ...themeStyles.searchInput }}
+              />
+              <button style={styles.searchButton}>🔍</button>
+            </div>
+            <div style={styles.notificationIcon}>
+              🔔<span style={styles.notificationBadge}>3</span>
+            </div>
+            <button style={{ ...styles.actionButton, ...themeStyles.actionButton }}>📊 Generate Report</button>
+            <button style={{ ...styles.actionButton, ...styles.primaryButton }}>➕ Add New</button>
+            <button
+              style={{ ...styles.themeToggle, ...themeStyles.themeToggle }}
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              title="Toggle theme"
+            >
+              {isDarkMode ? "☀️" : "🌙"}
+            </button>
+          </div>
+        </header>
+
+        {/* Enhanced Stats Cards */}
+        <div style={styles.statsGrid}>
+          <div style={{ ...styles.statCard, ...styles.userCard, ...themeStyles.statCard }}>
+            <div style={styles.statHeader}>
+              <div style={styles.statIcon}>👥</div>
+              <div style={styles.trendUp}>📈 +{stats.growth}%</div>
+            </div>
+            <div style={styles.statContent}>
+              <h3 style={{ ...styles.statValue, ...themeStyles.statValue }}>{stats.totalUsers.toLocaleString()}</h3>
+              <p style={{ ...styles.statLabel, ...themeStyles.statLabel }}>Total Users</p>
+              <div style={styles.userDetails}>
+                <div style={styles.userBreakdown}>
+                  <span style={styles.userStat}>Active: 8,234</span>
+                  <span style={styles.userStat}>New: 1,234</span>
+                  <span style={styles.userStat}>Premium: 3,099</span>
+                </div>
+                <div style={styles.userGrowth}>
+                  <span style={styles.growthIndicator}>↗️ +15% this month</span>
+                </div>
+              </div>
+              <div style={styles.progressBar}>
+                <div style={{ ...styles.progressFill, width: "75%" }}></div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ ...styles.statCard, ...styles.revenueCard, ...themeStyles.statCard }}>
+            <div style={styles.statHeader}>
+              <div style={{ ...styles.statIcon, backgroundColor: "#dbeafe" }}>💰</div>
+              <div style={styles.trendUp}>📈 +8.2%</div>
+            </div>
+            <div style={styles.statContent}>
+              <h3 style={{ ...styles.statValue, ...styles.revenueValue, ...themeStyles.statValue }}>
+                ${(stats.revenue / 1000).toFixed(1)}K
+              </h3>
+              <p style={{ ...styles.statLabel, ...themeStyles.statLabel }}>Total Revenue</p>
+              <div style={styles.revenueDetails}>
+                <span style={styles.revenueFullAmount}>Full: ${stats.revenue.toLocaleString()}</span>
+                <div style={styles.revenueBreakdown}>
+                  <span style={styles.quarterStat}>Q1: $25,000</span>
+                  <span style={styles.quarterStat}>Q2: $23,000</span>
+                  <span style={styles.quarterStat}>Q3: $27,000</span>
+                  <span style={styles.quarterStat}>Q4: $23,765</span>
+                </div>
+                <div style={styles.revenueGrowth}>
+                  <span style={styles.growthIndicator}>📊 Target: $120K</span>
+                  <span style={styles.growthIndicator}>🎯 85% achieved</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ ...styles.statCard, ...themeStyles.statCard }}>
+            <div style={styles.statHeader}>
+              <div style={styles.statIcon}>📦</div>
+              <div style={styles.trendUp}>📈 +5.1%</div>
+            </div>
+            <div style={styles.statContent}>
+              <h3 style={{ ...styles.statValue, ...themeStyles.statValue }}>{stats.orders.toLocaleString()}</h3>
+              <p style={{ ...styles.statLabel, ...themeStyles.statLabel }}>Orders</p>
+              <div style={styles.progressBar}>
+                <div style={{ ...styles.progressFill, width: "60%" }}></div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ ...styles.statCard, ...themeStyles.statCard }}>
+            <div style={styles.statHeader}>
+              <div style={styles.statIcon}>📈</div>
+              <div style={styles.trendUp}>📈 +2.3%</div>
+            </div>
+            <div style={styles.statContent}>
+              <h3 style={{ ...styles.statValue, ...themeStyles.statValue }}>{stats.growth}%</h3>
+              <p style={{ ...styles.statLabel, ...themeStyles.statLabel }}>Growth Rate</p>
+              <div style={styles.progressBar}>
+                <div style={{ ...styles.progressFill, width: "85%" }}></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions Section */}
+        <div style={{ ...styles.quickActionsSection, ...themeStyles.quickActionsSection }}>
+          <h2 style={{ ...styles.sectionTitle, ...themeStyles.sectionTitle }}>Quick Actions</h2>
+          <div style={styles.dashboardQuickActionsGrid}>
+            {quickActions.map((action, index) => (
+              <button
+                key={index}
+                style={{
+                  ...styles.quickActionCard,
+                  ...themeStyles.quickActionCard,
+                  borderLeft: `4px solid ${action.color}`,
+                }}
+                onClick={action.action}
+              >
+                <div style={styles.quickActionIcon}>{action.icon}</div>
+                <span style={styles.quickActionText}>{action.title}</span>
+                <div style={styles.quickActionArrow}>→</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Enhanced Content Grid */}
+        <div style={styles.contentGrid}>
+          {/* Enhanced Chart Section */}
+          <div style={{ ...styles.chartSection, ...themeStyles.chartSection }}>
+            <div style={styles.sectionHeader}>
+              <h2 style={{ ...styles.sectionTitle, ...themeStyles.sectionTitle }}>Revenue & Users Overview</h2>
+              <div style={styles.chartControls}>
+                <select style={{ ...styles.selectDropdown, ...themeStyles.selectDropdown }}>
+                  <option>Last 6 months</option>
+                  <option>Last year</option>
+                  <option>All time</option>
+                </select>
+                <div style={styles.chartLegend}>
+                  <span style={styles.legendItem}>
+                    <span style={{ ...styles.legendColor, backgroundColor: "#3b82f6" }}></span>
+                    Revenue
+                  </span>
+                  <span style={styles.legendItem}>
+                    <span style={{ ...styles.legendColor, backgroundColor: "#10b981" }}></span>
+                    Users
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div style={styles.chartContainer}>
+              <div style={styles.chart}>
+                {chartData.map((item, index) => (
+                  <div key={index} style={styles.chartBar}>
+                    <div style={styles.barGroup}>
+                      <div
+                        style={{
+                          ...styles.chartBarFill,
+                          backgroundColor: "#3b82f6",
+                          height: `${(item.revenue / 1000) * 100}%`,
+                        }}
+                      ></div>
+                      <div
+                        style={{
+                          ...styles.chartBarFill,
+                          backgroundColor: "#10b981",
+                          height: `${(item.users / 600) * 100}%`,
+                          marginLeft: "4px",
+                        }}
+                      ></div>
+                    </div>
+                    <span style={{ ...styles.chartLabel, ...themeStyles.chartLabel }}>{item.month}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Tasks & Calendar Section */}
+          <div style={styles.rightColumn}>
+            {/* Tasks Section */}
+            <div style={{ ...styles.tasksSection, ...themeStyles.tasksSection }}>
+              <div style={styles.sectionHeader}>
+                <h2 style={{ ...styles.sectionTitle, ...themeStyles.sectionTitle }}>Tasks</h2>
+                <span style={styles.taskProgress}>
+                  {completedTasks}/{tasks.length}
+                </span>
+              </div>
+              <div style={styles.tasksList}>
+                {tasks.map((task) => (
+                  <div key={task.id} style={{ ...styles.taskItem, ...themeStyles.taskItem }}>
+                    <input type="checkbox" checked={task.completed} style={styles.taskCheckbox} readOnly />
+                    <span
+                      style={{
+                        ...styles.taskText,
+                        ...themeStyles.taskText,
+                        textDecoration: task.completed ? "line-through" : "none",
+                        opacity: task.completed ? 0.6 : 1,
+                      }}
+                    >
+                      {task.title}
+                    </span>
+                    <span
+                      style={{
+                        ...styles.priorityBadge,
+                        backgroundColor:
+                          task.priority === "high" ? "#ef4444" : task.priority === "medium" ? "#f59e0b" : "#10b981",
+                      }}
+                    >
+                      {task.priority}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div style={styles.progressBar}>
+                <div style={{ ...styles.progressFill, width: `${taskCompletionRate}%` }}></div>
+              </div>
+            </div>
+
+            {/* Calendar Section */}
+            <div style={{ ...styles.calendarSection, ...themeStyles.calendarSection }}>
+              <div style={styles.sectionHeader}>
+                <h2 style={{ ...styles.sectionTitle, ...themeStyles.sectionTitle }}>Upcoming Events</h2>
+                <button style={styles.viewAllButton}>View All</button>
+              </div>
+              <div style={styles.eventsList}>
+                {upcomingEvents.map((event) => (
+                  <div key={event.id} style={{ ...styles.eventItem, ...themeStyles.eventItem }}>
+                    <div style={styles.eventTime}>
+                      <span style={styles.eventDate}>{event.date}</span>
+                      <span style={{ ...styles.eventTimeText, ...themeStyles.eventTimeText }}>{event.time}</span>
+                    </div>
+                    <span style={{ ...styles.eventTitle, ...themeStyles.eventTitle }}>{event.title}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Performance Metrics & Team Section */}
+        <div style={styles.bottomGrid}>
+          {/* Performance Metrics */}
+          <div style={{ ...styles.performanceSection, ...themeStyles.performanceSection }}>
+            <h2 style={{ ...styles.sectionTitle, ...themeStyles.sectionTitle }}>Performance Metrics</h2>
+            <div style={styles.metricsGrid}>
+              {performanceMetrics.map((metric, index) => (
+                <div key={index} style={styles.metricItem}>
+                  <div style={styles.circularProgress}>
+                    <svg width="90" height="90" style={styles.progressSvg}>
+                      <circle cx="45" cy="45" r="38" stroke="#e5e7eb" strokeWidth="8" fill="none" />
+                      <circle
+                        cx="45"
+                        cy="45"
+                        r="38"
+                        stroke={metric.color}
+                        strokeWidth="8"
+                        fill="none"
+                        strokeDasharray={`${(metric.value / 100) * 238} 238`}
+                        strokeLinecap="round"
+                        transform="rotate(-90 45 45)"
+                      />
+                    </svg>
+                    <span style={{ ...styles.progressValue, ...themeStyles.progressValue }}>{metric.value}%</span>
+                  </div>
+                  <span style={{ ...styles.metricLabel, ...themeStyles.metricLabel }}>{metric.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Team Members */}
+          <div style={{ ...styles.teamSection, ...themeStyles.teamSection }}>
+            <div style={styles.sectionHeader}>
+              <h2 style={{ ...styles.sectionTitle, ...themeStyles.sectionTitle }}>Team Members</h2>
+              <button style={styles.viewAllButton}>View All</button>
+            </div>
+            <div style={styles.teamGrid}>
+              {teamMembers.map((member) => (
+                <div key={member.id} style={{ ...styles.teamMember, ...themeStyles.teamMember }}>
+                  <div style={styles.memberAvatar}>
+                    <img src={member.avatar || "/placeholder.svg"} alt={member.name} style={styles.avatarImage} />
+                    <div
+                      style={{
+                        ...styles.statusDot,
+                        backgroundColor: getStatusColor(member.status),
+                      }}
+                    ></div>
+                  </div>
+                  <div style={styles.memberInfo}>
+                    <span style={{ ...styles.memberName, ...themeStyles.memberName }}>{member.name}</span>
+                    <span style={{ ...styles.memberStatus, ...themeStyles.memberStatus }}>{member.status}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Recent Activity */}
+          <div style={{ ...styles.activitySection, ...themeStyles.activitySection }}>
+            <div style={styles.sectionHeader}>
+              <h2 style={{ ...styles.sectionTitle, ...themeStyles.sectionTitle }}>Recent Activity</h2>
+              <button style={styles.viewAllButton}>View All</button>
+            </div>
+            <div style={styles.activityList}>
+              {recentActivities.map((activity) => (
+                <div key={activity.id} style={{ ...styles.activityItem, ...themeStyles.activityItem }}>
+                  <div style={{ ...styles.activityIcon, ...themeStyles.activityIcon }}>
+                    {getActivityIcon(activity.type)}
+                  </div>
+                  <div style={styles.activityContent}>
+                    <p style={{ ...styles.activityText, ...themeStyles.activityText }}>
+                      <strong>{activity.user}</strong> {activity.action}
+                    </p>
+                    <span style={{ ...styles.activityTime, ...themeStyles.activityTime }}>{activity.time}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
 
-// Action button component
-function ActionButton({ icon: Icon, label }) {
-  return (
-    <Button
-      variant="outline"
-      className="h-auto py-3 px-3 border-slate-700 bg-slate-800/50 hover:bg-slate-700/50 flex flex-col items-center justify-center space-y-1 w-full"
-    >
-      <Icon className="h-5 w-5 text-cyan-500" />
-      <span className="text-xs">{label}</span>
-    </Button>
-  )
+const styles = {
+  container: {
+    display: "flex",
+    minHeight: "100vh",
+    fontFamily: "'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+  },
+  // Navigation Styles
+  sidebar: {
+    height: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    transition: "width 0.3s ease",
+    position: "fixed",
+    left: 0,
+    top: 0,
+    zIndex: 1000,
+    boxShadow: "2px 0 15px rgba(0, 0, 0, 0.1)",
+  },
+  header: {
+    padding: "1.5rem 1rem",
+    borderBottom: "1px solid #e2e8f0",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  logo: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.75rem",
+  },
+  logoImage: {
+    width: "32px",
+    height: "32px",
+    borderRadius: "8px",
+  },
+  logoText: {
+    fontSize: "1.4rem",
+    fontWeight: "700",
+    background: "linear-gradient(135deg, #3b82f6, #1e40af)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+  },
+  logoCollapsed: {
+    fontSize: "1.6rem",
+    fontWeight: "700",
+  },
+  headerActions: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+  },
+  collapseButton: {
+    fontSize: "1.1rem",
+    cursor: "pointer",
+    padding: "0.6rem",
+    borderRadius: "6px",
+    transition: "background-color 0.2s ease",
+    background: "none",
+    border: "none",
+  },
+  quickActionsContainer: {
+    padding: "1.2rem",
+    borderBottom: "1px solid #e2e8f0",
+  },
+  quickActionsTitle: {
+    fontSize: "0.8rem",
+    fontWeight: "600",
+    marginBottom: "0.8rem",
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
+  },
+  quickActionsGrid: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "0.6rem",
+  },
+  quickActionButton: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "0.4rem",
+    padding: "1.2rem 0.8rem",
+    border: "1px solid #e2e8f0",
+    borderRadius: "10px",
+    cursor: "pointer",
+    transition: "all 0.3s ease",
+    fontSize: "0.8rem",
+    fontWeight: "500",
+    backgroundColor: "#f8fafc",
+  },
+  quickActionIcon: {
+    fontSize: "1.6rem",
+    color: "#3b82f6",
+  },
+  quickActionText: {
+    fontSize: "0.8rem",
+    fontWeight: "500",
+  },
+  nav: {
+    flex: 1,
+    padding: "1.2rem 0",
+    overflowY: "auto",
+  },
+  menuList: {
+    listStyle: "none",
+    padding: 0,
+    margin: 0,
+  },
+  menuItem: {
+    margin: "0.3rem 0",
+  },
+  menuItemContainer: {
+    position: "relative",
+  },
+  menuLink: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.8rem",
+    padding: "1rem 1.2rem",
+    textDecoration: "none",
+    transition: "all 0.2s ease",
+    borderRadius: "0 30px 30px 0",
+    margin: "0 0.6rem 0 0",
+    position: "relative",
+    fontSize: "0.95rem",
+    fontWeight: "500",
+  },
+  menuLinkActive: {
+    backgroundColor: "#3b82f6",
+    color: "white",
+    boxShadow: "0 4px 12px rgba(59, 130, 246, 0.3)",
+  },
+  menuIcon: {
+    fontSize: "1.3rem",
+    minWidth: "26px",
+  },
+  menuText: {
+    fontSize: "0.95rem",
+    fontWeight: "500",
+    flex: 1,
+  },
+  menuRight: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.6rem",
+  },
+  menuBadge: {
+    backgroundColor: "#ef4444",
+    color: "white",
+    borderRadius: "12px",
+    padding: "0.2rem 0.6rem",
+    fontSize: "0.7rem",
+    fontWeight: "600",
+    minWidth: "20px",
+    textAlign: "center",
+  },
+  submenuArrow: {
+    fontSize: "0.7rem",
+    transition: "transform 0.2s ease",
+  },
+  submenu: {
+    listStyle: "none",
+    padding: "0.6rem 0",
+    margin: "0",
+    marginLeft: "2.2rem",
+    borderLeft: "2px solid #e2e8f0",
+    paddingLeft: "1.2rem",
+  },
+  submenuItem: {
+    margin: "0.3rem 0",
+  },
+  submenuLink: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.6rem",
+    padding: "0.6rem 0.8rem",
+    textDecoration: "none",
+    borderRadius: "8px",
+    transition: "all 0.2s ease",
+    fontSize: "0.85rem",
+    fontWeight: "500",
+  },
+  submenuLinkActive: {
+    backgroundColor: "#3b82f6",
+    color: "white",
+  },
+  submenuIcon: {
+    fontSize: "1rem",
+    minWidth: "18px",
+  },
+  submenuText: {
+    flex: 1,
+  },
+  submenuBadge: {
+    backgroundColor: "#ef4444",
+    color: "white",
+    borderRadius: "10px",
+    padding: "0.1rem 0.4rem",
+    fontSize: "0.6rem",
+    fontWeight: "600",
+  },
+  userSection: {
+    padding: "1.2rem",
+    borderTop: "1px solid #e2e8f0",
+    position: "relative",
+  },
+  userProfile: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.8rem",
+    cursor: "pointer",
+    padding: "0.8rem",
+    borderRadius: "12px",
+    transition: "background-color 0.2s ease",
+  },
+  userAvatar: {
+    position: "relative",
+    width: "42px",
+    height: "42px",
+    borderRadius: "50%",
+    overflow: "hidden",
+    border: "2px solid #3b82f6",
+  },
+  avatarImage: {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+  },
+  onlineStatus: {
+    position: "absolute",
+    bottom: "2px",
+    right: "2px",
+    width: "12px",
+    height: "12px",
+    backgroundColor: "#10b981",
+    borderRadius: "50%",
+    border: "2px solid white",
+  },
+  userInfo: {
+    flex: 1,
+  },
+  userName: {
+    fontSize: "0.95rem",
+    fontWeight: "600",
+    marginBottom: "0.2rem",
+  },
+  userEmail: {
+    fontSize: "0.75rem",
+    marginBottom: "0.2rem",
+  },
+  userStatus: {
+    fontSize: "0.7rem",
+    color: "#10b981",
+    fontWeight: "500",
+  },
+  dropdownIcon: {
+    fontSize: "0.75rem",
+  },
+  userMenu: {
+    position: "absolute",
+    bottom: "100%",
+    left: "1.2rem",
+    right: "1.2rem",
+    borderRadius: "12px",
+    padding: "0.6rem 0",
+    boxShadow: "0 -8px 25px rgba(0, 0, 0, 0.15)",
+    marginBottom: "0.6rem",
+    border: "1px solid #e2e8f0",
+  },
+  userMenuItem: {
+    display: "block",
+    padding: "0.8rem 1.2rem",
+    textDecoration: "none",
+    fontSize: "0.9rem",
+    transition: "background-color 0.2s ease",
+    fontWeight: "500",
+  },
+  divider: {
+    height: "1px",
+    backgroundColor: "#e2e8f0",
+    margin: "0.6rem 0",
+  },
+  logoutButton: {
+    width: "100%",
+    padding: "0.8rem 1.2rem",
+    background: "none",
+    border: "none",
+    fontSize: "0.9rem",
+    cursor: "pointer",
+    textAlign: "left",
+    transition: "background-color 0.2s ease",
+    fontWeight: "500",
+  },
+  // Dashboard Styles
+  mainContent: {
+    flex: 1,
+    padding: "2rem",
+    transition: "margin-left 0.3s ease",
+    minHeight: "100vh",
+  },
+  dashboardHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: "2.5rem",
+    paddingBottom: "2rem",
+    borderBottom: "1px solid #e2e8f0",
+    padding: "2rem",
+    borderRadius: "16px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+  },
+  headerLeft: {
+    flex: 1,
+  },
+  pageTitle: {
+    fontSize: "2.5rem",
+    fontWeight: "700",
+    margin: "0 0 0.75rem 0",
+    letterSpacing: "-0.025em",
+  },
+  pageSubtitle: {
+    fontSize: "1.1rem",
+    margin: "0 0 1.5rem 0",
+    fontWeight: "400",
+  },
+  headerInfo: {
+    display: "flex",
+    gap: "1.5rem",
+    flexWrap: "wrap",
+  },
+  currentTime: {
+    fontSize: "0.95rem",
+    color: "#3b82f6",
+    fontWeight: "600",
+    backgroundColor: "#eff6ff",
+    padding: "0.6rem 1.2rem",
+    borderRadius: "25px",
+    border: "1px solid #dbeafe",
+  },
+  currentDate: {
+    fontSize: "0.95rem",
+    color: "#10b981",
+    fontWeight: "500",
+    backgroundColor: "#ecfdf5",
+    padding: "0.6rem 1.2rem",
+    borderRadius: "25px",
+    border: "1px solid #d1fae5",
+  },
+  weather: {
+    fontSize: "0.95rem",
+    color: "#f59e0b",
+    fontWeight: "500",
+    backgroundColor: "#fffbeb",
+    padding: "0.6rem 1.2rem",
+    borderRadius: "25px",
+    border: "1px solid #fed7aa",
+  },
+  searchContainer: {
+    position: "relative",
+  },
+  searchInput: {
+    padding: "0.8rem 3rem 0.8rem 1.2rem",
+    border: "1px solid #e2e8f0",
+    borderRadius: "30px",
+    fontSize: "0.95rem",
+    width: "280px",
+    outline: "none",
+    transition: "all 0.2s ease",
+  },
+  searchButton: {
+    position: "absolute",
+    right: "1rem",
+    top: "50%",
+    transform: "translateY(-50%)",
+    background: "none",
+    border: "none",
+    color: "#3b82f6",
+    cursor: "pointer",
+    fontSize: "1.1rem",
+  },
+  notificationIcon: {
+    position: "relative",
+    fontSize: "1.6rem",
+    cursor: "pointer",
+    padding: "0.6rem",
+  },
+  notificationBadge: {
+    position: "absolute",
+    top: "0",
+    right: "0",
+    backgroundColor: "#ef4444",
+    color: "white",
+    borderRadius: "50%",
+    width: "22px",
+    height: "22px",
+    fontSize: "0.75rem",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontWeight: "600",
+  },
+  actionButton: {
+    padding: "0.8rem 1.8rem",
+    border: "1px solid #e2e8f0",
+    borderRadius: "30px",
+    fontSize: "0.95rem",
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+    fontWeight: "500",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.05)",
+  },
+  primaryButton: {
+    backgroundColor: "#3b82f6",
+    color: "white",
+    border: "1px solid #3b82f6",
+  },
+  themeToggle: {
+    padding: "0.8rem",
+    border: "1px solid #e2e8f0",
+    borderRadius: "50%",
+    fontSize: "1.2rem",
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+    fontWeight: "500",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.05)",
+    width: "48px",
+    height: "48px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  statsGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
+    gap: "2rem",
+    marginBottom: "3rem",
+  },
+  statCard: {
+    padding: "2.5rem",
+    borderRadius: "16px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+    transition: "transform 0.2s ease, box-shadow 0.2s ease",
+    border: "1px solid #f1f5f9",
+  },
+  userCard: {
+    minHeight: "280px",
+  },
+  revenueCard: {
+    minHeight: "280px",
+    backgroundColor: "#f0fdfa",
+    border: "1px solid #d1fae5",
+  },
+  statHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "2rem",
+  },
+  statIcon: {
+    fontSize: "2.5rem",
+    padding: "1.5rem",
+    backgroundColor: "#f8fafc",
+    borderRadius: "16px",
+    border: "1px solid #e2e8f0",
+  },
+  trendUp: {
+    fontSize: "0.9rem",
+    color: "#10b981",
+    fontWeight: "600",
+    backgroundColor: "#ecfdf5",
+    padding: "0.5rem 1.2rem",
+    borderRadius: "20px",
+    border: "1px solid #d1fae5",
+  },
+  statContent: {
+    flex: 1,
+  },
+  statValue: {
+    fontSize: "2.8rem",
+    fontWeight: "700",
+    margin: "0 0 0.5rem 0",
+    letterSpacing: "-0.025em",
+  },
+  revenueValue: {
+    fontSize: "3rem",
+    color: "#065f46",
+  },
+  statLabel: {
+    fontSize: "1.1rem",
+    margin: "0 0 1.5rem 0",
+    fontWeight: "500",
+  },
+  progressBar: {
+    width: "100%",
+    height: "8px",
+    backgroundColor: "#e5e7eb",
+    borderRadius: "4px",
+    overflow: "hidden",
+    marginTop: "1rem",
+  },
+  progressFill: {
+    height: "100%",
+    backgroundColor: "#3b82f6",
+    borderRadius: "4px",
+    transition: "width 0.3s ease",
+  },
+  userDetails: {
+    marginBottom: "1rem",
+  },
+  userBreakdown: {
+    display: "flex",
+    gap: "1rem",
+    marginBottom: "0.8rem",
+    flexWrap: "wrap",
+  },
+  userStat: {
+    fontSize: "0.85rem",
+    color: "#374151",
+    backgroundColor: "#f8fafc",
+    padding: "0.4rem 0.8rem",
+    borderRadius: "8px",
+    border: "1px solid #e2e8f0",
+  },
+  userGrowth: {
+    display: "flex",
+    gap: "0.5rem",
+  },
+  growthIndicator: {
+    fontSize: "0.8rem",
+    color: "#10b981",
+    fontWeight: "500",
+  },
+  revenueDetails: {
+    marginBottom: "1rem",
+  },
+  revenueFullAmount: {
+    fontSize: "0.9rem",
+    color: "#374151",
+    backgroundColor: "#f8fafc",
+    padding: "0.5rem 1rem",
+    borderRadius: "8px",
+    display: "inline-block",
+    border: "1px solid #e2e8f0",
+    marginBottom: "0.8rem",
+  },
+  revenueBreakdown: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "0.5rem",
+    marginBottom: "0.8rem",
+  },
+  quarterStat: {
+    fontSize: "0.8rem",
+    color: "#374151",
+    backgroundColor: "#f8fafc",
+    padding: "0.4rem 0.8rem",
+    borderRadius: "6px",
+    border: "1px solid #e2e8f0",
+    textAlign: "center",
+  },
+  revenueGrowth: {
+    display: "flex",
+    gap: "1rem",
+    flexWrap: "wrap",
+  },
+  quickActionsSection: {
+    padding: "2rem",
+    borderRadius: "16px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+    marginBottom: "3rem",
+    border: "1px solid #f1f5f9",
+  },
+  dashboardQuickActionsGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+    gap: "1.5rem",
+    marginTop: "1.5rem",
+  },
+  quickActionCard: {
+    display: "flex",
+    alignItems: "center",
+    gap: "1rem",
+    padding: "1.5rem",
+    borderRadius: "12px",
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+    fontSize: "0.95rem",
+    fontWeight: "500",
+    border: "1px solid #e2e8f0",
+    position: "relative",
+  },
+  quickActionArrow: {
+    fontSize: "1.2rem",
+    color: "#6b7280",
+    transition: "transform 0.2s ease",
+  },
+  contentGrid: {
+    display: "grid",
+    gridTemplateColumns: "2fr 1fr",
+    gap: "2.5rem",
+    marginBottom: "3rem",
+  },
+  chartSection: {
+    padding: "2rem",
+    borderRadius: "16px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+    border: "1px solid #f1f5f9",
+  },
+  rightColumn: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "2rem",
+  },
+  sectionHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "2rem",
+  },
+  sectionTitle: {
+    fontSize: "1.4rem",
+    fontWeight: "600",
+    margin: 0,
+  },
+  chartControls: {
+    display: "flex",
+    alignItems: "center",
+    gap: "1.5rem",
+  },
+  selectDropdown: {
+    padding: "0.6rem 1rem",
+    border: "1px solid #e2e8f0",
+    borderRadius: "8px",
+    fontSize: "0.9rem",
+  },
+  chartLegend: {
+    display: "flex",
+    gap: "1.5rem",
+  },
+  legendItem: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.6rem",
+    fontSize: "0.85rem",
+    color: "#6b7280",
+    fontWeight: "500",
+  },
+  legendColor: {
+    width: "14px",
+    height: "14px",
+    borderRadius: "3px",
+  },
+  chartContainer: {
+    height: "320px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  chart: {
+    display: "flex",
+    alignItems: "end",
+    gap: "1.5rem",
+    height: "220px",
+    width: "100%",
+  },
+  chartBar: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    height: "100%",
+  },
+  barGroup: {
+    display: "flex",
+    alignItems: "end",
+    height: "100%",
+    width: "100%",
+    justifyContent: "center",
+  },
+  chartBarFill: {
+    width: "24px",
+    borderRadius: "4px 4px 0 0",
+    transition: "height 0.3s ease",
+    minHeight: "20px",
+  },
+  chartLabel: {
+    fontSize: "0.85rem",
+    marginTop: "0.8rem",
+    fontWeight: "500",
+  },
+  tasksSection: {
+    padding: "2rem",
+    borderRadius: "16px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+    border: "1px solid #f1f5f9",
+  },
+  taskProgress: {
+    fontSize: "0.9rem",
+    color: "#3b82f6",
+    fontWeight: "600",
+    backgroundColor: "#eff6ff",
+    padding: "0.4rem 1rem",
+    borderRadius: "20px",
+    border: "1px solid #dbeafe",
+  },
+  tasksList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem",
+    marginBottom: "1.5rem",
+  },
+  taskItem: {
+    display: "flex",
+    alignItems: "center",
+    gap: "1rem",
+    padding: "1rem",
+    borderRadius: "10px",
+    border: "1px solid #e2e8f0",
+  },
+  taskCheckbox: {
+    width: "18px",
+    height: "18px",
+    accentColor: "#3b82f6",
+  },
+  taskText: {
+    flex: 1,
+    fontSize: "0.95rem",
+    fontWeight: "500",
+  },
+  priorityBadge: {
+    fontSize: "0.7rem",
+    color: "white",
+    padding: "0.3rem 0.6rem",
+    borderRadius: "12px",
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
+  },
+  calendarSection: {
+    padding: "2rem",
+    borderRadius: "16px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+    border: "1px solid #f1f5f9",
+  },
+  eventsList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem",
+  },
+  eventItem: {
+    display: "flex",
+    alignItems: "center",
+    gap: "1.2rem",
+    padding: "1rem",
+    borderRadius: "10px",
+    border: "1px solid #e2e8f0",
+  },
+  eventTime: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    minWidth: "70px",
+  },
+  eventDate: {
+    fontSize: "0.7rem",
+    color: "#3b82f6",
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
+  },
+  eventTimeText: {
+    fontSize: "0.85rem",
+    fontWeight: "500",
+  },
+  eventTitle: {
+    fontSize: "0.95rem",
+    fontWeight: "500",
+  },
+  viewAllButton: {
+    padding: "0.6rem 1.2rem",
+    border: "none",
+    backgroundColor: "#3b82f6",
+    color: "white",
+    borderRadius: "8px",
+    fontSize: "0.85rem",
+    cursor: "pointer",
+    fontWeight: "500",
+    transition: "background-color 0.2s ease",
+  },
+  bottomGrid: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr 1fr",
+    gap: "2.5rem",
+  },
+  performanceSection: {
+    padding: "2rem",
+    borderRadius: "16px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+    border: "1px solid #f1f5f9",
+  },
+  metricsGrid: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "2rem",
+    marginTop: "1.5rem",
+  },
+  metricItem: {
+    display: "flex",
+    alignItems: "center",
+    gap: "1.5rem",
+  },
+  circularProgress: {
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  progressSvg: {
+    transform: "rotate(-90deg)",
+  },
+  progressValue: {
+    position: "absolute",
+    fontSize: "1rem",
+    fontWeight: "700",
+  },
+  metricLabel: {
+    fontSize: "0.95rem",
+    fontWeight: "500",
+  },
+  teamSection: {
+    padding: "2rem",
+    borderRadius: "16px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+    border: "1px solid #f1f5f9",
+  },
+  teamGrid: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1.2rem",
+  },
+  teamMember: {
+    display: "flex",
+    alignItems: "center",
+    gap: "1rem",
+    padding: "1rem",
+    borderRadius: "10px",
+    border: "1px solid #e2e8f0",
+  },
+  memberAvatar: {
+    position: "relative",
+    width: "44px",
+    height: "44px",
+    borderRadius: "50%",
+    overflow: "hidden",
+  },
+  statusDot: {
+    position: "absolute",
+    bottom: "2px",
+    right: "2px",
+    width: "12px",
+    height: "12px",
+    borderRadius: "50%",
+    border: "2px solid white",
+  },
+  memberInfo: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  memberName: {
+    fontSize: "0.95rem",
+    fontWeight: "600",
+  },
+  memberStatus: {
+    fontSize: "0.8rem",
+    textTransform: "capitalize",
+    fontWeight: "500",
+  },
+  activitySection: {
+    padding: "2rem",
+    borderRadius: "16px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+    border: "1px solid #f1f5f9",
+  },
+  activityList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1.2rem",
+  },
+  activityItem: {
+    display: "flex",
+    alignItems: "center",
+    gap: "1rem",
+    padding: "1rem",
+    borderRadius: "10px",
+    border: "1px solid #e2e8f0",
+  },
+  activityIcon: {
+    fontSize: "1.3rem",
+    padding: "0.6rem",
+    borderRadius: "50%",
+    border: "1px solid #e2e8f0",
+  },
+  activityContent: {
+    flex: 1,
+  },
+  activityText: {
+    fontSize: "0.95rem",
+    margin: "0 0 0.3rem 0",
+    fontWeight: "500",
+  },
+  activityTime: {
+    fontSize: "0.8rem",
+    fontWeight: "500",
+  },
 }
 
-// Add missing imports
-function Info(props) {
-  return <AlertCircle {...props} />
+const lightTheme = {
+  container: {
+    backgroundColor: "#f8fafc",
+  },
+  mainContent: {
+    backgroundColor: "#f8fafc",
+  },
+  sidebar: {
+    backgroundColor: "#ffffff",
+    color: "#1f2937",
+    borderRight: "1px solid #e2e8f0",
+  },
+  header: {
+    backgroundColor: "white",
+    borderBottom: "1px solid #e2e8f0",
+  },
+  logoText: {
+    background: "linear-gradient(135deg, #3b82f6, #1e40af)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+  },
+  iconButton: {
+    color: "#374151",
+    backgroundColor: "transparent",
+  },
+  panel: {
+    backgroundColor: "#ffffff",
+    border: "1px solid #e2e8f0",
+  },
+  text: {
+    color: "#1f2937",
+  },
+  subText: {
+    color: "#6b7280",
+  },
+  link: {
+    color: "#3b82f6",
+  },
+  input: {
+    backgroundColor: "#ffffff",
+    color: "#1f2937",
+    border: "1px solid #e2e8f0",
+  },
+  button: {
+    color: "#3b82f6",
+    backgroundColor: "transparent",
+  },
+  menuLink: {
+    color: "#374151",
+  },
+  menuLinkActive: {
+    backgroundColor: "#3b82f6",
+    color: "white",
+  },
+  submenu: {
+    borderLeft: "2px solid #e2e8f0",
+  },
+  submenuLink: {
+    color: "#6b7280",
+  },
+  submenuLinkActive: {
+    backgroundColor: "#3b82f6",
+    color: "white",
+  },
+  userSection: {
+    borderTop: "1px solid #e2e8f0",
+  },
+  userProfile: {
+    backgroundColor: "transparent",
+  },
+  menuItem: {
+    color: "#374151",
+  },
+  logoutButton: {
+    color: "#dc2626",
+  },
+  quickActions: {
+    borderBottom: "1px solid #e2e8f0",
+  },
+  quickActionButton: {
+    backgroundColor: "#f8fafc",
+    color: "#374151",
+    border: "1px solid #e2e8f0",
+  },
+  pageTitle: {
+    color: "#1f2937",
+  },
+  pageSubtitle: {
+    color: "#6b7280",
+  },
+  searchInput: {
+    backgroundColor: "#f8fafc",
+    color: "#1f2937",
+  },
+  actionButton: {
+    backgroundColor: "white",
+    color: "#374151",
+  },
+  themeToggle: {
+    backgroundColor: "white",
+    color: "#374151",
+    border: "1px solid #e2e8f0",
+  },
+  statCard: {
+    backgroundColor: "white",
+  },
+  statValue: {
+    color: "#1f2937",
+  },
+  statLabel: {
+    color: "#6b7280",
+  },
+  quickActionsSection: {
+    backgroundColor: "white",
+  },
+  quickActionCard: {
+    backgroundColor: "#f8fafc",
+    color: "#374151",
+  },
+  sectionTitle: {
+    color: "#1f2937",
+  },
+  chartSection: {
+    backgroundColor: "white",
+  },
+  selectDropdown: {
+    backgroundColor: "white",
+    color: "#374151",
+  },
+  chartLabel: {
+    color: "#6b7280",
+  },
+  tasksSection: {
+    backgroundColor: "white",
+  },
+  taskItem: {
+    backgroundColor: "#f8fafc",
+  },
+  taskText: {
+    color: "#1f2937",
+  },
+  calendarSection: {
+    backgroundColor: "white",
+  },
+  eventItem: {
+    backgroundColor: "#f8fafc",
+  },
+  eventTimeText: {
+    color: "#6b7280",
+  },
+  eventTitle: {
+    color: "#1f2937",
+  },
+  performanceSection: {
+    backgroundColor: "white",
+  },
+  progressValue: {
+    color: "#1f2937",
+  },
+  metricLabel: {
+    color: "#6b7280",
+  },
+  teamSection: {
+    backgroundColor: "white",
+  },
+  teamMember: {
+    backgroundColor: "#f8fafc",
+  },
+  memberName: {
+    color: "#1f2937",
+  },
+  memberStatus: {
+    color: "#6b7280",
+  },
+  activitySection: {
+    backgroundColor: "white",
+  },
+  activityItem: {
+    backgroundColor: "#f8fafc",
+  },
+  activityIcon: {
+    backgroundColor: "white",
+  },
+  activityText: {
+    color: "#1f2937",
+  },
+  activityTime: {
+    color: "#6b7280",
+  },
 }
 
-function Check(props) {
-  return <Shield {...props} />
+const darkTheme = {
+  container: {
+    backgroundColor: "#0f172a",
+  },
+  mainContent: {
+    backgroundColor: "#0f172a",
+  },
+  sidebar: {
+    backgroundColor: "#1e293b",
+    color: "white",
+    borderRight: "1px solid #334155",
+  },
+  header: {
+    backgroundColor: "#1e293b",
+    borderBottom: "1px solid #334155",
+  },
+  logoText: {
+    background: "linear-gradient(135deg, #60a5fa, #3b82f6)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+  },
+  iconButton: {
+    color: "#60a5fa",
+    backgroundColor: "transparent",
+  },
+  panel: {
+    backgroundColor: "#334155",
+    border: "1px solid #475569",
+  },
+  text: {
+    color: "white",
+  },
+  subText: {
+    color: "#cbd5e1",
+  },
+  link: {
+    color: "#60a5fa",
+  },
+  input: {
+    backgroundColor: "#334155",
+    color: "white",
+    border: "1px solid #475569",
+  },
+  button: {
+    color: "#60a5fa",
+    backgroundColor: "transparent",
+  },
+  menuLink: {
+    color: "#cbd5e1",
+  },
+  menuLinkActive: {
+    backgroundColor: "#3b82f6",
+    color: "white",
+  },
+  submenu: {
+    borderLeft: "2px solid #475569",
+  },
+  submenuLink: {
+    color: "#cbd5e1",
+  },
+  submenuLinkActive: {
+    backgroundColor: "#3b82f6",
+    color: "white",
+  },
+  userSection: {
+    borderTop: "1px solid #334155",
+  },
+  userProfile: {
+    backgroundColor: "transparent",
+  },
+  menuItem: {
+    color: "#cbd5e1",
+  },
+  logoutButton: {
+    color: "#f87171",
+  },
+  quickActions: {
+    borderBottom: "1px solid #334155",
+  },
+  quickActionButton: {
+    backgroundColor: "#334155",
+    color: "#cbd5e1",
+    border: "1px solid #475569",
+  },
+  pageTitle: {
+    color: "white",
+  },
+  pageSubtitle: {
+    color: "#cbd5e1",
+  },
+  searchInput: {
+    backgroundColor: "#334155",
+    color: "white",
+    border: "1px solid #475569",
+  },
+  actionButton: {
+    backgroundColor: "#334155",
+    color: "#cbd5e1",
+    border: "1px solid #475569",
+  },
+  themeToggle: {
+    backgroundColor: "#334155",
+    color: "#cbd5e1",
+    border: "1px solid #475569",
+  },
+  statCard: {
+    backgroundColor: "#1e293b",
+    border: "1px solid #334155",
+  },
+  statValue: {
+    color: "white",
+  },
+  statLabel: {
+    color: "#cbd5e1",
+  },
+  quickActionsSection: {
+    backgroundColor: "#1e293b",
+    border: "1px solid #334155",
+  },
+  quickActionCard: {
+    backgroundColor: "#334155",
+    color: "#cbd5e1",
+    border: "1px solid #475569",
+  },
+  sectionTitle: {
+    color: "white",
+  },
+  chartSection: {
+    backgroundColor: "#1e293b",
+    border: "1px solid #334155",
+  },
+  selectDropdown: {
+    backgroundColor: "#334155",
+    color: "#cbd5e1",
+    border: "1px solid #475569",
+  },
+  chartLabel: {
+    color: "#cbd5e1",
+  },
+  tasksSection: {
+    backgroundColor: "#1e293b",
+    border: "1px solid #334155",
+  },
+  taskItem: {
+    backgroundColor: "#334155",
+    border: "1px solid #475569",
+  },
+  taskText: {
+    color: "#cbd5e1",
+  },
+  calendarSection: {
+    backgroundColor: "#1e293b",
+    border: "1px solid #334155",
+  },
+  eventItem: {
+    backgroundColor: "#334155",
+    border: "1px solid #475569",
+  },
+  eventTimeText: {
+    color: "#cbd5e1",
+  },
+  eventTitle: {
+    color: "white",
+  },
+  performanceSection: {
+    backgroundColor: "#1e293b",
+    border: "1px solid #334155",
+  },
+  progressValue: {
+    color: "white",
+  },
+  metricLabel: {
+    color: "#cbd5e1",
+  },
+  teamSection: {
+    backgroundColor: "#1e293b",
+    border: "1px solid #334155",
+  },
+  teamMember: {
+    backgroundColor: "#334155",
+    border: "1px solid #475569",
+  },
+  memberName: {
+    color: "white",
+  },
+  memberStatus: {
+    color: "#cbd5e1",
+  },
+  activitySection: {
+    backgroundColor: "#1e293b",
+    border: "1px solid #334155",
+  },
+  activityItem: {
+    backgroundColor: "#334155",
+    border: "1px solid #475569",
+  },
+  activityIcon: {
+    backgroundColor: "#1e293b",
+    border: "1px solid #475569",
+  },
+  activityText: {
+    color: "#cbd5e1",
+  },
+  activityTime: {
+    color: "#94a3b8",
+  },
 }
+
+export default Dashboard

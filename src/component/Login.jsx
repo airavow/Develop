@@ -1,8 +1,11 @@
  "use client"
 
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+
 
 function Login() {
+  const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
@@ -65,7 +68,8 @@ function Login() {
       await new Promise((resolve) => setTimeout(resolve, 1500))
       console.log("Login successful", formData)
       // Redirect or handle successful login here
-      alert("Login successful! (This is a demo)")
+      alert("Login successful!")
+      navigate("/Dashboard");
     } catch (error) {
       console.error("Login failed", error)
     } finally {
@@ -184,7 +188,7 @@ function Login() {
 
             <div style={styles.signupContainer}>
               Don't have an account?{" "}
-              <a href="#signup" style={styles.signupLink}>
+              <a href="/signup" style={styles.signupLink}>
                 Sign up
               </a>
             </div>
