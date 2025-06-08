@@ -1,50 +1,70 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef } from "react"
-import { Link, useLocation, useNavigate } from "react-router-dom"
+import { useState, useEffect, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 function Dashboard() {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const [isNavCollapsed, setIsNavCollapsed] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(false)
-  const [showUserMenu, setShowUserMenu] = useState(false)
-  const [expandedMenus, setExpandedMenus] = useState({})
-  const [currentTime, setCurrentTime] = useState(new Date())
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [isNavCollapsed, setIsNavCollapsed] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [expandedMenus, setExpandedMenus] = useState({});
+  const [currentTime, setCurrentTime] = useState(new Date());
   const [weather] = useState({
     temp: 72,
     condition: "Sunny",
     icon: "☀️",
-  })
+  });
 
-  const notificationRef = useRef(null)
+  const notificationRef = useRef(null);
 
   const [stats, setStats] = useState({
     totalUsers: 12345,
     revenue: 98765,
     orders: 1234,
     growth: 12.5,
-  })
+  });
 
   const [tasks] = useState([
     { id: 1, title: "Review Q4 Reports", completed: true, priority: "high" },
     { id: 2, title: "Team Meeting", completed: false, priority: "medium" },
     { id: 3, title: "Update Documentation", completed: false, priority: "low" },
     { id: 4, title: "Client Presentation", completed: true, priority: "high" },
-  ])
+  ]);
 
   const [upcomingEvents] = useState([
     { id: 1, title: "Team Standup", time: "9:00 AM", date: "Today" },
     { id: 2, title: "Client Call", time: "2:00 PM", date: "Today" },
     { id: 3, title: "Project Review", time: "10:00 AM", date: "Tomorrow" },
-  ])
+  ]);
 
   const [teamMembers] = useState([
-    { id: 1, name: "Alice Johnson", status: "online", avatar: "/placeholder.svg?height=32&width=32" },
-    { id: 2, name: "Bob Smith", status: "away", avatar: "/placeholder.svg?height=32&width=32" },
-    { id: 3, name: "Carol Davis", status: "online", avatar: "/placeholder.svg?height=32&width=32" },
-    { id: 4, name: "David Wilson", status: "offline", avatar: "/placeholder.svg?height=32&width=32" },
-  ])
+    {
+      id: 1,
+      name: "Alice Johnson",
+      status: "online",
+      avatar: "/placeholder.svg?height=32&width=32",
+    },
+    {
+      id: 2,
+      name: "Bob Smith",
+      status: "away",
+      avatar: "/placeholder.svg?height=32&width=32",
+    },
+    {
+      id: 3,
+      name: "Carol Davis",
+      status: "online",
+      avatar: "/placeholder.svg?height=32&width=32",
+    },
+    {
+      id: 4,
+      name: "David Wilson",
+      status: "offline",
+      avatar: "/placeholder.svg?height=32&width=32",
+    },
+  ]);
 
   const [recentActivities] = useState([
     {
@@ -75,7 +95,7 @@ function Dashboard() {
       time: "2 hours ago",
       type: "complete",
     },
-  ])
+  ]);
 
   const [chartData] = useState([
     { month: "Jan", revenue: 400, users: 240 },
@@ -84,13 +104,13 @@ function Dashboard() {
     { month: "Apr", revenue: 800, users: 450 },
     { month: "May", revenue: 500, users: 280 },
     { month: "Jun", revenue: 900, users: 520 },
-  ])
+  ]);
 
   const [performanceMetrics] = useState([
     { label: "Server Uptime", value: 99.9, color: "#10b981" },
     { label: "Response Time", value: 85, color: "#f59e0b" },
     { label: "User Satisfaction", value: 92, color: "#3b82f6" },
-  ])
+  ]);
 
   const menuItems = [
     {
@@ -109,6 +129,93 @@ function Dashboard() {
         { title: "Revenue", path: "/analytics/revenue", icon: "💰" },
         { title: "Users", path: "/analytics/users", icon: "👥" },
         { title: "Traffic", path: "/analytics/traffic", icon: "🚦" },
+        { title: "Sales Analytics", path: "/analytics/sales", icon: "📊" },
+        {
+          title: "Customer Insights",
+          path: "/analytics/customers",
+          icon: "👤",
+        },
+      ],
+    },
+    {
+      title: "E-Commerce",
+      path: "/ecommerce",
+      icon: "🛒",
+      shortcut: "Ctrl+E",
+      submenu: [
+        { title: "Products", path: "/ecommerce/products", icon: "📦" },
+        { title: "Categories", path: "/ecommerce/categories", icon: "🏷️" },
+        { title: "Orders", path: "/ecommerce/orders", icon: "📋", badge: 12 },
+        { title: "Customers", path: "/ecommerce/customers", icon: "👥" },
+        { title: "Coupons", path: "/ecommerce/coupons", icon: "🎫" },
+        { title: "Reviews", path: "/ecommerce/reviews", icon: "⭐" },
+      ],
+    },
+    {
+      title: "Inventory",
+      path: "/inventory",
+      icon: "📋",
+      shortcut: "Ctrl+I",
+      submenu: [
+        { title: "Stock Overview", path: "/inventory/overview", icon: "📊" },
+        { title: "Stock Management", path: "/inventory/stock", icon: "📦" },
+        {
+          title: "Low Stock Alerts",
+          path: "/inventory/alerts",
+          icon: "⚠️",
+          badge: 5,
+        },
+        { title: "Suppliers", path: "/inventory/suppliers", icon: "🏭" },
+        {
+          title: "Purchase Orders",
+          path: "/inventory/purchase-orders",
+          icon: "📄",
+        },
+        { title: "Stock Reports", path: "/inventory/reports", icon: "📈" },
+      ],
+    },
+    {
+      title: "Stock Management",
+      path: "/stock",
+      icon: "📦",
+      shortcut: "Ctrl+S",
+      submenu: [
+        { title: "Current Stock", path: "/stock/current", icon: "📊" },
+        { title: "Stock Movements", path: "/stock/movements", icon: "🔄" },
+        { title: "Stock Adjustments", path: "/stock/adjustments", icon: "⚖️" },
+        { title: "Warehouse Management", path: "/stock/warehouse", icon: "🏢" },
+        { title: "Stock Transfers", path: "/stock/transfers", icon: "🚚" },
+        { title: "Barcode Scanner", path: "/stock/scanner", icon: "📱" },
+      ],
+    },
+    {
+      title: "Website Admin",
+      path: "/website",
+      icon: "🌐",
+      shortcut: "Ctrl+W",
+      submenu: [
+        { title: "Landing Page", path: "/website/landing", icon: "🏠" },
+        { title: "Header Settings", path: "/website/header", icon: "📄" },
+        { title: "Footer Settings", path: "/website/footer", icon: "📋" },
+        { title: "Hero Section", path: "/website/hero", icon: "🎯" },
+        { title: "About Page", path: "/website/about", icon: "ℹ️" },
+        { title: "Contact Info", path: "/website/contact", icon: "📞" },
+        { title: "Address Management", path: "/website/address", icon: "📍" },
+        { title: "SEO Settings", path: "/website/seo", icon: "🔍" },
+      ],
+    },
+    {
+      title: "Content Management",
+      path: "/content",
+      icon: "📝",
+      shortcut: "Ctrl+C",
+      submenu: [
+        { title: "Pages", path: "/content/pages", icon: "📄" },
+        { title: "Blog Posts", path: "/content/blog", icon: "📰" },
+        { title: "Media Library", path: "/content/media", icon: "🖼️" },
+        { title: "Banners", path: "/content/banners", icon: "🎨" },
+        { title: "Testimonials", path: "/content/testimonials", icon: "💬" },
+        { title: "FAQ", path: "/content/faq", icon: "❓" },
       ],
     },
     {
@@ -118,20 +225,50 @@ function Dashboard() {
       shortcut: "Ctrl+U",
       submenu: [
         { title: "All Users", path: "/users/all", icon: "👤" },
-        { title: "Active Users", path: "/users/active", icon: "🟢" },
+        { title: "Customers", path: "/users/customers", icon: "🛍️" },
+        { title: "Admins", path: "/users/admins", icon: "👨‍💼" },
         { title: "User Roles", path: "/users/roles", icon: "🎭" },
         { title: "Permissions", path: "/users/permissions", icon: "🔐" },
+        { title: "User Activity", path: "/users/activity", icon: "📊" },
       ],
     },
     {
-      title: "Projects",
-      path: "/projects",
-      icon: "📁",
-      shortcut: "Ctrl+P",
+      title: "Orders",
+      path: "/orders",
+      icon: "📋",
+      shortcut: "Ctrl+O",
+      badge: 8,
       submenu: [
-        { title: "Active Projects", path: "/projects/active", icon: "🚀" },
-        { title: "Completed", path: "/projects/completed", icon: "✅" },
-        { title: "Templates", path: "/projects/templates", icon: "📋" },
+        { title: "All Orders", path: "/orders/all", icon: "📋" },
+        {
+          title: "Pending Orders",
+          path: "/orders/pending",
+          icon: "⏳",
+          badge: 3,
+        },
+        {
+          title: "Processing",
+          path: "/orders/processing",
+          icon: "⚙️",
+          badge: 2,
+        },
+        { title: "Shipped", path: "/orders/shipped", icon: "🚚" },
+        { title: "Delivered", path: "/orders/delivered", icon: "✅" },
+        { title: "Cancelled", path: "/orders/cancelled", icon: "❌" },
+        { title: "Returns", path: "/orders/returns", icon: "↩️", badge: 1 },
+      ],
+    },
+    {
+      title: "Marketing",
+      path: "/marketing",
+      icon: "📢",
+      submenu: [
+        { title: "Campaigns", path: "/marketing/campaigns", icon: "🎯" },
+        { title: "Email Marketing", path: "/marketing/email", icon: "📧" },
+        { title: "Social Media", path: "/marketing/social", icon: "📱" },
+        { title: "Promotions", path: "/marketing/promotions", icon: "🎁" },
+        { title: "Newsletters", path: "/marketing/newsletters", icon: "📰" },
+        { title: "Analytics", path: "/marketing/analytics", icon: "📊" },
       ],
     },
     {
@@ -143,6 +280,7 @@ function Dashboard() {
         { title: "Inbox", path: "/messages/inbox", icon: "📥", badge: 3 },
         { title: "Sent", path: "/messages/sent", icon: "📤" },
         { title: "Drafts", path: "/messages/drafts", icon: "📝", badge: 2 },
+        { title: "Customer Support", path: "/messages/support", icon: "🎧" },
       ],
     },
     {
@@ -158,6 +296,7 @@ function Dashboard() {
         { title: "Documents", path: "/files/documents", icon: "📄" },
         { title: "Images", path: "/files/images", icon: "🖼️" },
         { title: "Videos", path: "/files/videos", icon: "🎥" },
+        { title: "Product Images", path: "/files/products", icon: "📸" },
         { title: "Shared", path: "/files/shared", icon: "🔗" },
       ],
     },
@@ -167,8 +306,11 @@ function Dashboard() {
       icon: "📊",
       submenu: [
         { title: "Sales Report", path: "/reports/sales", icon: "💹" },
+        { title: "Inventory Report", path: "/reports/inventory", icon: "📦" },
         { title: "User Report", path: "/reports/users", icon: "👥" },
+        { title: "Financial Report", path: "/reports/financial", icon: "💰" },
         { title: "Performance", path: "/reports/performance", icon: "⚡" },
+        { title: "Custom Reports", path: "/reports/custom", icon: "🔧" },
       ],
     },
     {
@@ -177,33 +319,61 @@ function Dashboard() {
       icon: "⚙️",
       submenu: [
         { title: "General", path: "/settings/general", icon: "🔧" },
+        { title: "Store Settings", path: "/settings/store", icon: "🏪" },
+        { title: "Payment Gateway", path: "/settings/payment", icon: "💳" },
+        { title: "Shipping", path: "/settings/shipping", icon: "🚚" },
+        { title: "Tax Settings", path: "/settings/tax", icon: "🧾" },
         { title: "Security", path: "/settings/security", icon: "🔒" },
         { title: "Integrations", path: "/settings/integrations", icon: "🔌" },
+        { title: "Backup", path: "/settings/backup", icon: "💾" },
         { title: "Billing", path: "/settings/billing", icon: "💳" },
       ],
     },
-  ]
-
-  const navQuickActions = [
-    { title: "New User", icon: "👤", action: () => navigate("/users/new") },
-    { title: "New Project", icon: "📁", action: () => navigate("/projects/new") },
-    { title: "Send Message", icon: "💬", action: () => navigate("/messages/compose") },
-    { title: "Generate Report", icon: "📊", action: () => navigate("/reports/generate") },
-  ]
+  ];
 
   const quickActions = [
-    { title: "Add User", icon: "👤", color: "#3b82f6", action: () => console.log("Add User") },
-    { title: "New Project", icon: "📁", color: "#10b981", action: () => console.log("New Project") },
-    { title: "Send Message", icon: "💬", color: "#f59e0b", action: () => console.log("Send Message") },
-    { title: "Generate Report", icon: "📊", color: "#8b5cf6", action: () => console.log("Generate Report") },
-    { title: "Upload File", icon: "📤", color: "#ef4444", action: () => console.log("Upload File") },
-    { title: "Schedule Meeting", icon: "📅", color: "#06b6d4", action: () => console.log("Schedule Meeting") },
-  ]
+    {
+      title: "Add User",
+      icon: "👤",
+      color: "#3b82f6",
+      action: () => console.log("Add User"),
+    },
+    {
+      title: "New Project",
+      icon: "📁",
+      color: "#10b981",
+      action: () => console.log("New Project"),
+    },
+    {
+      title: "Send Message",
+      icon: "💬",
+      color: "#f59e0b",
+      action: () => console.log("Send Message"),
+    },
+    {
+      title: "Generate Report",
+      icon: "📊",
+      color: "#8b5cf6",
+      action: () => console.log("Generate Report"),
+    },
+    {
+      title: "Upload File",
+      icon: "📤",
+      color: "#ef4444",
+      action: () => console.log("Upload File"),
+    },
+    {
+      title: "Schedule Meeting",
+      icon: "📅",
+      color: "#06b6d4",
+      action: () => console.log("Schedule Meeting"),
+    },
+  ];
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentTime(new Date())
-    }, 1000)
+      setCurrentTime(new Date());
+    }, 1000);
 
     const statsTimer = setTimeout(() => {
       setStats({
@@ -211,71 +381,76 @@ function Dashboard() {
         revenue: 102340,
         orders: 1289,
         growth: 15.2,
-      })
-    }, 1000)
+      });
+    }, 1000);
 
     const handleClickOutside = (event) => {
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target)
+      ) {
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      clearInterval(timer)
-      clearTimeout(statsTimer)
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
+      clearInterval(timer);
+      clearTimeout(statsTimer);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleLogout = () => {
-    console.log("Logging out...")
-    navigate("/login")
-  }
+    console.log("Logging out...");
+    navigate("/login");
+  };
 
   const isActive = (path) => {
-    return location.pathname === path || location.pathname.startsWith(path + "/")
-  }
+    return (
+      location.pathname === path || location.pathname.startsWith(path + "/")
+    );
+  };
 
   const toggleSubmenu = (title) => {
     setExpandedMenus((prev) => ({
       ...prev,
       [title]: !prev[title],
-    }))
-  }
+    }));
+  };
 
   const getActivityIcon = (type) => {
     switch (type) {
       case "create":
-        return "➕"
+        return "➕";
       case "update":
-        return "✏️"
+        return "✏️";
       case "delete":
-        return "🗑️"
+        return "🗑️";
       case "complete":
-        return "✅"
+        return "✅";
       default:
-        return "📝"
+        return "📝";
     }
-  }
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
       case "online":
-        return "#10b981"
+        return "#10b981";
       case "away":
-        return "#f59e0b"
+        return "#f59e0b";
       case "offline":
-        return "#6b7280"
+        return "#6b7280";
       default:
-        return "#6b7280"
+        return "#6b7280";
     }
-  }
+  };
 
-  const completedTasks = tasks.filter((task) => task.completed).length
-  const taskCompletionRate = (completedTasks / tasks.length) * 100
+  const completedTasks = tasks.filter((task) => task.completed).length;
+  const taskCompletionRate = (completedTasks / tasks.length) * 100;
 
-  const themeStyles = isDarkMode ? darkTheme : lightTheme
+  const themeStyles = isDarkMode ? darkTheme : lightTheme;
 
   // Navigation Component
   const Navigation = () => (
@@ -291,11 +466,21 @@ function Dashboard() {
         <div style={styles.logo}>
           {!isNavCollapsed && (
             <>
-              <img src="/placeholder.svg?height=32&width=32" alt="Logo" style={styles.logoImage} />
-              <span style={{ ...styles.logoText, ...themeStyles.logoText }}>DashBoard Pro</span>
+              <img
+                src="/placeholder.svg?height=32&width=32"
+                alt="Logo"
+                style={styles.logoImage}
+              />
+              <span style={{ ...styles.logoText, ...themeStyles.logoText }}>
+                DashBoard Pro
+              </span>
             </>
           )}
-          {isNavCollapsed && <span style={{ ...styles.logoCollapsed, ...themeStyles.logoText }}>DP</span>}
+          {isNavCollapsed && (
+            <span style={{ ...styles.logoCollapsed, ...themeStyles.logoText }}>
+              DP
+            </span>
+          )}
         </div>
         <div style={styles.headerActions}>
           <button
@@ -306,26 +491,6 @@ function Dashboard() {
           </button>
         </div>
       </div>
-
-      {/* Quick Actions */}
-      {!isNavCollapsed && (
-        <div style={{ ...styles.quickActionsContainer, ...themeStyles.quickActions }}>
-          <div style={{ ...styles.quickActionsTitle, ...themeStyles.subText }}>Quick Actions</div>
-          <div style={styles.quickActionsGrid}>
-            {navQuickActions.map((action, index) => (
-              <button
-                key={index}
-                style={{ ...styles.quickActionButton, ...themeStyles.quickActionButton }}
-                onClick={action.action}
-                title={action.title}
-              >
-                <span style={styles.quickActionIcon}>{action.icon}</span>
-                <span style={styles.quickActionText}>{action.title}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Navigation Menu */}
       <nav style={styles.nav}>
@@ -338,13 +503,20 @@ function Dashboard() {
                   style={{
                     ...styles.menuLink,
                     ...themeStyles.menuLink,
-                    ...(isActive(item.path) ? { ...styles.menuLinkActive, ...themeStyles.menuLinkActive } : {}),
+                    ...(isActive(item.path)
+                      ? {
+                          ...styles.menuLinkActive,
+                          ...themeStyles.menuLinkActive,
+                        }
+                      : {}),
                   }}
-                  title={isNavCollapsed ? `${item.title} ${item.shortcut || ""}` : ""}
+                  title={
+                    isNavCollapsed ? `${item.title} ${item.shortcut || ""}` : ""
+                  }
                   onClick={(e) => {
                     if (item.submenu) {
-                      e.preventDefault()
-                      toggleSubmenu(item.title)
+                      e.preventDefault();
+                      toggleSubmenu(item.title);
                     }
                   }}
                 >
@@ -353,12 +525,16 @@ function Dashboard() {
                     <>
                       <span style={styles.menuText}>{item.title}</span>
                       <div style={styles.menuRight}>
-                        {item.badge && <span style={styles.menuBadge}>{item.badge}</span>}
+                        {item.badge && (
+                          <span style={styles.menuBadge}>{item.badge}</span>
+                        )}
                         {item.submenu && (
                           <span
                             style={{
                               ...styles.submenuArrow,
-                              transform: expandedMenus[item.title] ? "rotate(90deg)" : "rotate(0deg)",
+                              transform: expandedMenus[item.title]
+                                ? "rotate(90deg)"
+                                : "rotate(0deg)",
                             }}
                           >
                             ▶
@@ -370,28 +546,41 @@ function Dashboard() {
                 </Link>
 
                 {/* Submenu */}
-                {item.submenu && !isNavCollapsed && expandedMenus[item.title] && (
-                  <ul style={{ ...styles.submenu, ...themeStyles.submenu }}>
-                    {item.submenu.map((subItem) => (
-                      <li key={subItem.path} style={styles.submenuItem}>
-                        <Link
-                          to={subItem.path}
-                          style={{
-                            ...styles.submenuLink,
-                            ...themeStyles.submenuLink,
-                            ...(isActive(subItem.path)
-                              ? { ...styles.submenuLinkActive, ...themeStyles.submenuLinkActive }
-                              : {}),
-                          }}
-                        >
-                          <span style={styles.submenuIcon}>{subItem.icon}</span>
-                          <span style={styles.submenuText}>{subItem.title}</span>
-                          {subItem.badge && <span style={styles.submenuBadge}>{subItem.badge}</span>}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                {item.submenu &&
+                  !isNavCollapsed &&
+                  expandedMenus[item.title] && (
+                    <ul style={{ ...styles.submenu, ...themeStyles.submenu }}>
+                      {item.submenu.map((subItem) => (
+                        <li key={subItem.path} style={styles.submenuItem}>
+                          <Link
+                            to={subItem.path}
+                            style={{
+                              ...styles.submenuLink,
+                              ...themeStyles.submenuLink,
+                              ...(isActive(subItem.path)
+                                ? {
+                                    ...styles.submenuLinkActive,
+                                    ...themeStyles.submenuLinkActive,
+                                  }
+                                : {}),
+                            }}
+                          >
+                            <span style={styles.submenuIcon}>
+                              {subItem.icon}
+                            </span>
+                            <span style={styles.submenuText}>
+                              {subItem.title}
+                            </span>
+                            {subItem.badge && (
+                              <span style={styles.submenuBadge}>
+                                {subItem.badge}
+                              </span>
+                            )}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
               </div>
             </li>
           ))}
@@ -405,49 +594,77 @@ function Dashboard() {
           onClick={() => setShowUserMenu(!showUserMenu)}
         >
           <div style={styles.userAvatar}>
-            <img src="/placeholder.svg?height=40&width=40" alt="User Avatar" style={styles.avatarImage} />
+            <img
+              src="/placeholder.svg?height=40&width=40"
+              alt="User Avatar"
+              style={styles.avatarImage}
+            />
             <div style={styles.onlineStatus}></div>
           </div>
           {!isNavCollapsed && (
             <div style={styles.userInfo}>
-              <div style={{ ...styles.userName, ...themeStyles.text }}>John Doe</div>
-              <div style={{ ...styles.userEmail, ...themeStyles.subText }}>john@example.com</div>
+              <div style={{ ...styles.userName, ...themeStyles.text }}>
+                John Doe
+              </div>
+              <div style={{ ...styles.userEmail, ...themeStyles.subText }}>
+                john@example.com
+              </div>
               <div style={styles.userStatus}>🟢 Online</div>
             </div>
           )}
           {!isNavCollapsed && (
-            <span style={{ ...styles.dropdownIcon, ...themeStyles.subText }}>{showUserMenu ? "▲" : "▼"}</span>
+            <span style={{ ...styles.dropdownIcon, ...themeStyles.subText }}>
+              {showUserMenu ? "▲" : "▼"}
+            </span>
           )}
         </div>
 
         {/* User Dropdown Menu */}
         {showUserMenu && !isNavCollapsed && (
           <div style={{ ...styles.userMenu, ...themeStyles.panel }}>
-            <Link to="/profile" style={{ ...styles.userMenuItem, ...themeStyles.menuItem }}>
+            <Link
+              to="/profile"
+              style={{ ...styles.userMenuItem, ...themeStyles.menuItem }}
+            >
               👤 Profile
             </Link>
-            <Link to="/account" style={{ ...styles.userMenuItem, ...themeStyles.menuItem }}>
+            <Link
+              to="/account"
+              style={{ ...styles.userMenuItem, ...themeStyles.menuItem }}
+            >
               🔧 Account Settings
             </Link>
-            <Link to="/preferences" style={{ ...styles.userMenuItem, ...themeStyles.menuItem }}>
+            <Link
+              to="/preferences"
+              style={{ ...styles.userMenuItem, ...themeStyles.menuItem }}
+            >
               🎨 Preferences
             </Link>
-            <Link to="/billing" style={{ ...styles.userMenuItem, ...themeStyles.menuItem }}>
+            <Link
+              to="/billing"
+              style={{ ...styles.userMenuItem, ...themeStyles.menuItem }}
+            >
               💳 Billing
             </Link>
             <div style={styles.divider}></div>
-            <Link to="/help" style={{ ...styles.userMenuItem, ...themeStyles.menuItem }}>
+            <Link
+              to="/help"
+              style={{ ...styles.userMenuItem, ...themeStyles.menuItem }}
+            >
               ❓ Help & Support
             </Link>
             <div style={styles.divider}></div>
-            <button style={{ ...styles.logoutButton, ...themeStyles.logoutButton }} onClick={handleLogout}>
+            <button
+              style={{ ...styles.logoutButton, ...themeStyles.logoutButton }}
+              onClick={handleLogout}
+            >
               🚪 Logout
             </button>
           </div>
         )}
       </div>
     </div>
-  )
+  );
 
   return (
     <div style={{ ...styles.container, ...themeStyles.container }}>
@@ -463,12 +680,16 @@ function Dashboard() {
         {/* Enhanced Header */}
         <header style={{ ...styles.dashboardHeader, ...themeStyles.header }}>
           <div style={styles.headerLeft}>
-            <h1 style={{ ...styles.pageTitle, ...themeStyles.pageTitle }}>Dashboard</h1>
+            <h1 style={{ ...styles.pageTitle, ...themeStyles.pageTitle }}>
+              Dashboard
+            </h1>
             <p style={{ ...styles.pageSubtitle, ...themeStyles.pageSubtitle }}>
               Welcome back, John Doe! Here's what's happening today.
             </p>
             <div style={styles.headerInfo}>
-              <span style={styles.currentTime}>🕐 {currentTime.toLocaleTimeString()}</span>
+              <span style={styles.currentTime}>
+                🕐 {currentTime.toLocaleTimeString()}
+              </span>
               <span style={styles.currentDate}>
                 📅{" "}
                 {currentTime.toLocaleDateString("en-US", {
@@ -495,8 +716,14 @@ function Dashboard() {
             <div style={styles.notificationIcon}>
               🔔<span style={styles.notificationBadge}>3</span>
             </div>
-            <button style={{ ...styles.actionButton, ...themeStyles.actionButton }}>📊 Generate Report</button>
-            <button style={{ ...styles.actionButton, ...styles.primaryButton }}>➕ Add New</button>
+            <button
+              style={{ ...styles.actionButton, ...themeStyles.actionButton }}
+            >
+              📊 Generate Report
+            </button>
+            <button style={{ ...styles.actionButton, ...styles.primaryButton }}>
+              ➕ Add New
+            </button>
             <button
               style={{ ...styles.themeToggle, ...themeStyles.themeToggle }}
               onClick={() => setIsDarkMode(!isDarkMode)}
@@ -509,14 +736,24 @@ function Dashboard() {
 
         {/* Enhanced Stats Cards */}
         <div style={styles.statsGrid}>
-          <div style={{ ...styles.statCard, ...styles.userCard, ...themeStyles.statCard }}>
+          <div
+            style={{
+              ...styles.statCard,
+              ...styles.userCard,
+              ...themeStyles.statCard,
+            }}
+          >
             <div style={styles.statHeader}>
               <div style={styles.statIcon}>👥</div>
               <div style={styles.trendUp}>📈 +{stats.growth}%</div>
             </div>
             <div style={styles.statContent}>
-              <h3 style={{ ...styles.statValue, ...themeStyles.statValue }}>{stats.totalUsers.toLocaleString()}</h3>
-              <p style={{ ...styles.statLabel, ...themeStyles.statLabel }}>Total Users</p>
+              <h3 style={{ ...styles.statValue, ...themeStyles.statValue }}>
+                {stats.totalUsers.toLocaleString()}
+              </h3>
+              <p style={{ ...styles.statLabel, ...themeStyles.statLabel }}>
+                Total Users
+              </p>
               <div style={styles.userDetails}>
                 <div style={styles.userBreakdown}>
                   <span style={styles.userStat}>Active: 8,234</span>
@@ -533,18 +770,36 @@ function Dashboard() {
             </div>
           </div>
 
-          <div style={{ ...styles.statCard, ...styles.revenueCard, ...themeStyles.statCard }}>
+          <div
+            style={{
+              ...styles.statCard,
+              ...styles.revenueCard,
+              ...themeStyles.statCard,
+            }}
+          >
             <div style={styles.statHeader}>
-              <div style={{ ...styles.statIcon, backgroundColor: "#dbeafe" }}>💰</div>
+              <div style={{ ...styles.statIcon, backgroundColor: "#dbeafe" }}>
+                💰
+              </div>
               <div style={styles.trendUp}>📈 +8.2%</div>
             </div>
             <div style={styles.statContent}>
-              <h3 style={{ ...styles.statValue, ...styles.revenueValue, ...themeStyles.statValue }}>
+              <h3
+                style={{
+                  ...styles.statValue,
+                  ...styles.revenueValue,
+                  ...themeStyles.statValue,
+                }}
+              >
                 ${(stats.revenue / 1000).toFixed(1)}K
               </h3>
-              <p style={{ ...styles.statLabel, ...themeStyles.statLabel }}>Total Revenue</p>
+              <p style={{ ...styles.statLabel, ...themeStyles.statLabel }}>
+                Total Revenue
+              </p>
               <div style={styles.revenueDetails}>
-                <span style={styles.revenueFullAmount}>Full: ${stats.revenue.toLocaleString()}</span>
+                <span style={styles.revenueFullAmount}>
+                  Full: ${stats.revenue.toLocaleString()}
+                </span>
                 <div style={styles.revenueBreakdown}>
                   <span style={styles.quarterStat}>Q1: $25,000</span>
                   <span style={styles.quarterStat}>Q2: $23,000</span>
@@ -565,8 +820,12 @@ function Dashboard() {
               <div style={styles.trendUp}>📈 +5.1%</div>
             </div>
             <div style={styles.statContent}>
-              <h3 style={{ ...styles.statValue, ...themeStyles.statValue }}>{stats.orders.toLocaleString()}</h3>
-              <p style={{ ...styles.statLabel, ...themeStyles.statLabel }}>Orders</p>
+              <h3 style={{ ...styles.statValue, ...themeStyles.statValue }}>
+                {stats.orders.toLocaleString()}
+              </h3>
+              <p style={{ ...styles.statLabel, ...themeStyles.statLabel }}>
+                Orders
+              </p>
               <div style={styles.progressBar}>
                 <div style={{ ...styles.progressFill, width: "60%" }}></div>
               </div>
@@ -579,8 +838,12 @@ function Dashboard() {
               <div style={styles.trendUp}>📈 +2.3%</div>
             </div>
             <div style={styles.statContent}>
-              <h3 style={{ ...styles.statValue, ...themeStyles.statValue }}>{stats.growth}%</h3>
-              <p style={{ ...styles.statLabel, ...themeStyles.statLabel }}>Growth Rate</p>
+              <h3 style={{ ...styles.statValue, ...themeStyles.statValue }}>
+                {stats.growth}%
+              </h3>
+              <p style={{ ...styles.statLabel, ...themeStyles.statLabel }}>
+                Growth Rate
+              </p>
               <div style={styles.progressBar}>
                 <div style={{ ...styles.progressFill, width: "85%" }}></div>
               </div>
@@ -589,8 +852,15 @@ function Dashboard() {
         </div>
 
         {/* Quick Actions Section */}
-        <div style={{ ...styles.quickActionsSection, ...themeStyles.quickActionsSection }}>
-          <h2 style={{ ...styles.sectionTitle, ...themeStyles.sectionTitle }}>Quick Actions</h2>
+        <div
+          style={{
+            ...styles.quickActionsSection,
+            ...themeStyles.quickActionsSection,
+          }}
+        >
+          <h2 style={{ ...styles.sectionTitle, ...themeStyles.sectionTitle }}>
+            Quick Actions
+          </h2>
           <div style={styles.dashboardQuickActionsGrid}>
             {quickActions.map((action, index) => (
               <button
@@ -615,20 +885,39 @@ function Dashboard() {
           {/* Enhanced Chart Section */}
           <div style={{ ...styles.chartSection, ...themeStyles.chartSection }}>
             <div style={styles.sectionHeader}>
-              <h2 style={{ ...styles.sectionTitle, ...themeStyles.sectionTitle }}>Revenue & Users Overview</h2>
+              <h2
+                style={{ ...styles.sectionTitle, ...themeStyles.sectionTitle }}
+              >
+                Revenue & Users Overview
+              </h2>
               <div style={styles.chartControls}>
-                <select style={{ ...styles.selectDropdown, ...themeStyles.selectDropdown }}>
+                <select
+                  style={{
+                    ...styles.selectDropdown,
+                    ...themeStyles.selectDropdown,
+                  }}
+                >
                   <option>Last 6 months</option>
                   <option>Last year</option>
                   <option>All time</option>
                 </select>
                 <div style={styles.chartLegend}>
                   <span style={styles.legendItem}>
-                    <span style={{ ...styles.legendColor, backgroundColor: "#3b82f6" }}></span>
+                    <span
+                      style={{
+                        ...styles.legendColor,
+                        backgroundColor: "#3b82f6",
+                      }}
+                    ></span>
                     Revenue
                   </span>
                   <span style={styles.legendItem}>
-                    <span style={{ ...styles.legendColor, backgroundColor: "#10b981" }}></span>
+                    <span
+                      style={{
+                        ...styles.legendColor,
+                        backgroundColor: "#10b981",
+                      }}
+                    ></span>
                     Users
                   </span>
                 </div>
@@ -655,7 +944,14 @@ function Dashboard() {
                         }}
                       ></div>
                     </div>
-                    <span style={{ ...styles.chartLabel, ...themeStyles.chartLabel }}>{item.month}</span>
+                    <span
+                      style={{
+                        ...styles.chartLabel,
+                        ...themeStyles.chartLabel,
+                      }}
+                    >
+                      {item.month}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -665,22 +961,41 @@ function Dashboard() {
           {/* Tasks & Calendar Section */}
           <div style={styles.rightColumn}>
             {/* Tasks Section */}
-            <div style={{ ...styles.tasksSection, ...themeStyles.tasksSection }}>
+            <div
+              style={{ ...styles.tasksSection, ...themeStyles.tasksSection }}
+            >
               <div style={styles.sectionHeader}>
-                <h2 style={{ ...styles.sectionTitle, ...themeStyles.sectionTitle }}>Tasks</h2>
+                <h2
+                  style={{
+                    ...styles.sectionTitle,
+                    ...themeStyles.sectionTitle,
+                  }}
+                >
+                  Tasks
+                </h2>
                 <span style={styles.taskProgress}>
                   {completedTasks}/{tasks.length}
                 </span>
               </div>
               <div style={styles.tasksList}>
                 {tasks.map((task) => (
-                  <div key={task.id} style={{ ...styles.taskItem, ...themeStyles.taskItem }}>
-                    <input type="checkbox" checked={task.completed} style={styles.taskCheckbox} readOnly />
+                  <div
+                    key={task.id}
+                    style={{ ...styles.taskItem, ...themeStyles.taskItem }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={task.completed}
+                      style={styles.taskCheckbox}
+                      readOnly
+                    />
                     <span
                       style={{
                         ...styles.taskText,
                         ...themeStyles.taskText,
-                        textDecoration: task.completed ? "line-through" : "none",
+                        textDecoration: task.completed
+                          ? "line-through"
+                          : "none",
                         opacity: task.completed ? 0.6 : 1,
                       }}
                     >
@@ -690,7 +1005,11 @@ function Dashboard() {
                       style={{
                         ...styles.priorityBadge,
                         backgroundColor:
-                          task.priority === "high" ? "#ef4444" : task.priority === "medium" ? "#f59e0b" : "#10b981",
+                          task.priority === "high"
+                            ? "#ef4444"
+                            : task.priority === "medium"
+                            ? "#f59e0b"
+                            : "#10b981",
                       }}
                     >
                       {task.priority}
@@ -699,24 +1018,58 @@ function Dashboard() {
                 ))}
               </div>
               <div style={styles.progressBar}>
-                <div style={{ ...styles.progressFill, width: `${taskCompletionRate}%` }}></div>
+                <div
+                  style={{
+                    ...styles.progressFill,
+                    width: `${taskCompletionRate}%`,
+                  }}
+                ></div>
               </div>
             </div>
 
             {/* Calendar Section */}
-            <div style={{ ...styles.calendarSection, ...themeStyles.calendarSection }}>
+            <div
+              style={{
+                ...styles.calendarSection,
+                ...themeStyles.calendarSection,
+              }}
+            >
               <div style={styles.sectionHeader}>
-                <h2 style={{ ...styles.sectionTitle, ...themeStyles.sectionTitle }}>Upcoming Events</h2>
+                <h2
+                  style={{
+                    ...styles.sectionTitle,
+                    ...themeStyles.sectionTitle,
+                  }}
+                >
+                  Upcoming Events
+                </h2>
                 <button style={styles.viewAllButton}>View All</button>
               </div>
               <div style={styles.eventsList}>
                 {upcomingEvents.map((event) => (
-                  <div key={event.id} style={{ ...styles.eventItem, ...themeStyles.eventItem }}>
+                  <div
+                    key={event.id}
+                    style={{ ...styles.eventItem, ...themeStyles.eventItem }}
+                  >
                     <div style={styles.eventTime}>
                       <span style={styles.eventDate}>{event.date}</span>
-                      <span style={{ ...styles.eventTimeText, ...themeStyles.eventTimeText }}>{event.time}</span>
+                      <span
+                        style={{
+                          ...styles.eventTimeText,
+                          ...themeStyles.eventTimeText,
+                        }}
+                      >
+                        {event.time}
+                      </span>
                     </div>
-                    <span style={{ ...styles.eventTitle, ...themeStyles.eventTitle }}>{event.title}</span>
+                    <span
+                      style={{
+                        ...styles.eventTitle,
+                        ...themeStyles.eventTitle,
+                      }}
+                    >
+                      {event.title}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -727,14 +1080,28 @@ function Dashboard() {
         {/* Performance Metrics & Team Section */}
         <div style={styles.bottomGrid}>
           {/* Performance Metrics */}
-          <div style={{ ...styles.performanceSection, ...themeStyles.performanceSection }}>
-            <h2 style={{ ...styles.sectionTitle, ...themeStyles.sectionTitle }}>Performance Metrics</h2>
+          <div
+            style={{
+              ...styles.performanceSection,
+              ...themeStyles.performanceSection,
+            }}
+          >
+            <h2 style={{ ...styles.sectionTitle, ...themeStyles.sectionTitle }}>
+              Performance Metrics
+            </h2>
             <div style={styles.metricsGrid}>
               {performanceMetrics.map((metric, index) => (
                 <div key={index} style={styles.metricItem}>
                   <div style={styles.circularProgress}>
                     <svg width="90" height="90" style={styles.progressSvg}>
-                      <circle cx="45" cy="45" r="38" stroke="#e5e7eb" strokeWidth="8" fill="none" />
+                      <circle
+                        cx="45"
+                        cy="45"
+                        r="38"
+                        stroke="#e5e7eb"
+                        strokeWidth="8"
+                        fill="none"
+                      />
                       <circle
                         cx="45"
                         cy="45"
@@ -747,9 +1114,23 @@ function Dashboard() {
                         transform="rotate(-90 45 45)"
                       />
                     </svg>
-                    <span style={{ ...styles.progressValue, ...themeStyles.progressValue }}>{metric.value}%</span>
+                    <span
+                      style={{
+                        ...styles.progressValue,
+                        ...themeStyles.progressValue,
+                      }}
+                    >
+                      {metric.value}%
+                    </span>
                   </div>
-                  <span style={{ ...styles.metricLabel, ...themeStyles.metricLabel }}>{metric.label}</span>
+                  <span
+                    style={{
+                      ...styles.metricLabel,
+                      ...themeStyles.metricLabel,
+                    }}
+                  >
+                    {metric.label}
+                  </span>
                 </div>
               ))}
             </div>
@@ -758,14 +1139,25 @@ function Dashboard() {
           {/* Team Members */}
           <div style={{ ...styles.teamSection, ...themeStyles.teamSection }}>
             <div style={styles.sectionHeader}>
-              <h2 style={{ ...styles.sectionTitle, ...themeStyles.sectionTitle }}>Team Members</h2>
+              <h2
+                style={{ ...styles.sectionTitle, ...themeStyles.sectionTitle }}
+              >
+                Team Members
+              </h2>
               <button style={styles.viewAllButton}>View All</button>
             </div>
             <div style={styles.teamGrid}>
               {teamMembers.map((member) => (
-                <div key={member.id} style={{ ...styles.teamMember, ...themeStyles.teamMember }}>
+                <div
+                  key={member.id}
+                  style={{ ...styles.teamMember, ...themeStyles.teamMember }}
+                >
                   <div style={styles.memberAvatar}>
-                    <img src={member.avatar || "/placeholder.svg"} alt={member.name} style={styles.avatarImage} />
+                    <img
+                      src={member.avatar || "/placeholder.svg"}
+                      alt={member.name}
+                      style={styles.avatarImage}
+                    />
                     <div
                       style={{
                         ...styles.statusDot,
@@ -774,8 +1166,22 @@ function Dashboard() {
                     ></div>
                   </div>
                   <div style={styles.memberInfo}>
-                    <span style={{ ...styles.memberName, ...themeStyles.memberName }}>{member.name}</span>
-                    <span style={{ ...styles.memberStatus, ...themeStyles.memberStatus }}>{member.status}</span>
+                    <span
+                      style={{
+                        ...styles.memberName,
+                        ...themeStyles.memberName,
+                      }}
+                    >
+                      {member.name}
+                    </span>
+                    <span
+                      style={{
+                        ...styles.memberStatus,
+                        ...themeStyles.memberStatus,
+                      }}
+                    >
+                      {member.status}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -783,22 +1189,54 @@ function Dashboard() {
           </div>
 
           {/* Recent Activity */}
-          <div style={{ ...styles.activitySection, ...themeStyles.activitySection }}>
+          <div
+            style={{
+              ...styles.activitySection,
+              ...themeStyles.activitySection,
+            }}
+          >
             <div style={styles.sectionHeader}>
-              <h2 style={{ ...styles.sectionTitle, ...themeStyles.sectionTitle }}>Recent Activity</h2>
+              <h2
+                style={{ ...styles.sectionTitle, ...themeStyles.sectionTitle }}
+              >
+                Recent Activity
+              </h2>
               <button style={styles.viewAllButton}>View All</button>
             </div>
             <div style={styles.activityList}>
               {recentActivities.map((activity) => (
-                <div key={activity.id} style={{ ...styles.activityItem, ...themeStyles.activityItem }}>
-                  <div style={{ ...styles.activityIcon, ...themeStyles.activityIcon }}>
+                <div
+                  key={activity.id}
+                  style={{
+                    ...styles.activityItem,
+                    ...themeStyles.activityItem,
+                  }}
+                >
+                  <div
+                    style={{
+                      ...styles.activityIcon,
+                      ...themeStyles.activityIcon,
+                    }}
+                  >
                     {getActivityIcon(activity.type)}
                   </div>
                   <div style={styles.activityContent}>
-                    <p style={{ ...styles.activityText, ...themeStyles.activityText }}>
+                    <p
+                      style={{
+                        ...styles.activityText,
+                        ...themeStyles.activityText,
+                      }}
+                    >
                       <strong>{activity.user}</strong> {activity.action}
                     </p>
-                    <span style={{ ...styles.activityTime, ...themeStyles.activityTime }}>{activity.time}</span>
+                    <span
+                      style={{
+                        ...styles.activityTime,
+                        ...themeStyles.activityTime,
+                      }}
+                    >
+                      {activity.time}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -807,7 +1245,7 @@ function Dashboard() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const styles = {
@@ -869,44 +1307,6 @@ const styles = {
     transition: "background-color 0.2s ease",
     background: "none",
     border: "none",
-  },
-  quickActionsContainer: {
-    padding: "1.2rem",
-    borderBottom: "1px solid #e2e8f0",
-  },
-  quickActionsTitle: {
-    fontSize: "0.8rem",
-    fontWeight: "600",
-    marginBottom: "0.8rem",
-    textTransform: "uppercase",
-    letterSpacing: "0.5px",
-  },
-  quickActionsGrid: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "0.6rem",
-  },
-  quickActionButton: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "0.4rem",
-    padding: "1.2rem 0.8rem",
-    border: "1px solid #e2e8f0",
-    borderRadius: "10px",
-    cursor: "pointer",
-    transition: "all 0.3s ease",
-    fontSize: "0.8rem",
-    fontWeight: "500",
-    backgroundColor: "#f8fafc",
-  },
-  quickActionIcon: {
-    fontSize: "1.6rem",
-    color: "#3b82f6",
-  },
-  quickActionText: {
-    fontSize: "0.8rem",
-    fontWeight: "500",
   },
   nav: {
     flex: 1,
@@ -1213,18 +1613,21 @@ const styles = {
   },
   actionButton: {
     padding: "0.8rem 1.8rem",
-    border: "1px solid #e2e8f0",
+    border: "1px solid #3b82f6",
     borderRadius: "30px",
     fontSize: "0.95rem",
     cursor: "pointer",
     transition: "all 0.2s ease",
     fontWeight: "500",
-    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.05)",
-  },
-  primaryButton: {
+    boxShadow: "0 2px 8px rgba(59, 130, 246, 0.2)",
     backgroundColor: "#3b82f6",
     color: "white",
-    border: "1px solid #3b82f6",
+  },
+  primaryButton: {
+    backgroundColor: "#1d4ed8",
+    color: "white",
+    border: "1px solid #1d4ed8",
+    boxShadow: "0 4px 12px rgba(29, 78, 216, 0.3)",
   },
   themeToggle: {
     padding: "0.8rem",
@@ -1250,12 +1653,17 @@ const styles = {
   statCard: {
     padding: "2.5rem",
     borderRadius: "16px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+    boxShadow: "0 8px 25px rgba(59, 130, 246, 0.15)",
     transition: "transform 0.2s ease, box-shadow 0.2s ease",
-    border: "1px solid #f1f5f9",
+    background:
+      "linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%)",
+    border: "1px solid #93c5fd",
   },
   userCard: {
     minHeight: "280px",
+    background:
+      "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%)",
+    border: "1px solid #7dd3fc",
   },
   revenueCard: {
     minHeight: "280px",
@@ -1378,9 +1786,10 @@ const styles = {
   quickActionsSection: {
     padding: "2rem",
     borderRadius: "16px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+    boxShadow: "0 6px 20px rgba(59, 130, 246, 0.1)",
     marginBottom: "3rem",
-    border: "1px solid #f1f5f9",
+    background: "linear-gradient(135deg, #fefbff 0%, #f8fafc 100%)",
+    border: "1px solid #e2e8f0",
   },
   dashboardQuickActionsGrid: {
     display: "grid",
@@ -1398,8 +1807,10 @@ const styles = {
     transition: "all 0.2s ease",
     fontSize: "0.95rem",
     fontWeight: "500",
-    border: "1px solid #e2e8f0",
+    border: "1px solid #60a5fa",
     position: "relative",
+    background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+    boxShadow: "0 4px 12px rgba(96, 165, 250, 0.1)",
   },
   quickActionArrow: {
     fontSize: "1.2rem",
@@ -1415,8 +1826,9 @@ const styles = {
   chartSection: {
     padding: "2rem",
     borderRadius: "16px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
-    border: "1px solid #f1f5f9",
+    boxShadow: "0 6px 20px rgba(59, 130, 246, 0.1)",
+    background: "linear-gradient(135deg, #fefbff 0%, #f8fafc 100%)",
+    border: "1px solid #e2e8f0",
   },
   rightColumn: {
     display: "flex",
@@ -1503,8 +1915,9 @@ const styles = {
   tasksSection: {
     padding: "2rem",
     borderRadius: "16px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
-    border: "1px solid #f1f5f9",
+    boxShadow: "0 6px 20px rgba(59, 130, 246, 0.1)",
+    background: "linear-gradient(135deg, #fefbff 0%, #f8fafc 100%)",
+    border: "1px solid #e2e8f0",
   },
   taskProgress: {
     fontSize: "0.9rem",
@@ -1551,8 +1964,9 @@ const styles = {
   calendarSection: {
     padding: "2rem",
     borderRadius: "16px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
-    border: "1px solid #f1f5f9",
+    boxShadow: "0 6px 20px rgba(59, 130, 246, 0.1)",
+    background: "linear-gradient(135deg, #fefbff 0%, #f8fafc 100%)",
+    border: "1px solid #e2e8f0",
   },
   eventsList: {
     display: "flex",
@@ -1591,13 +2005,14 @@ const styles = {
   viewAllButton: {
     padding: "0.6rem 1.2rem",
     border: "none",
-    backgroundColor: "#3b82f6",
+    backgroundColor: "#2563eb",
     color: "white",
     borderRadius: "8px",
     fontSize: "0.85rem",
     cursor: "pointer",
     fontWeight: "500",
-    transition: "background-color 0.2s ease",
+    transition: "all 0.2s ease",
+    boxShadow: "0 2px 6px rgba(37, 99, 235, 0.2)",
   },
   bottomGrid: {
     display: "grid",
@@ -1607,8 +2022,9 @@ const styles = {
   performanceSection: {
     padding: "2rem",
     borderRadius: "16px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
-    border: "1px solid #f1f5f9",
+    boxShadow: "0 6px 20px rgba(59, 130, 246, 0.1)",
+    background: "linear-gradient(135deg, #fefbff 0%, #f8fafc 100%)",
+    border: "1px solid #e2e8f0",
   },
   metricsGrid: {
     display: "flex",
@@ -1642,8 +2058,9 @@ const styles = {
   teamSection: {
     padding: "2rem",
     borderRadius: "16px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
-    border: "1px solid #f1f5f9",
+    boxShadow: "0 6px 20px rgba(59, 130, 246, 0.1)",
+    background: "linear-gradient(135deg, #fefbff 0%, #f8fafc 100%)",
+    border: "1px solid #e2e8f0",
   },
   teamGrid: {
     display: "flex",
@@ -1690,8 +2107,9 @@ const styles = {
   activitySection: {
     padding: "2rem",
     borderRadius: "16px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
-    border: "1px solid #f1f5f9",
+    boxShadow: "0 6px 20px rgba(59, 130, 246, 0.1)",
+    background: "linear-gradient(135deg, #fefbff 0%, #f8fafc 100%)",
+    border: "1px solid #e2e8f0",
   },
   activityList: {
     display: "flex",
@@ -1724,7 +2142,7 @@ const styles = {
     fontSize: "0.8rem",
     fontWeight: "500",
   },
-}
+};
 
 const lightTheme = {
   container: {
@@ -1802,14 +2220,6 @@ const lightTheme = {
   logoutButton: {
     color: "#dc2626",
   },
-  quickActions: {
-    borderBottom: "1px solid #e2e8f0",
-  },
-  quickActionButton: {
-    backgroundColor: "#f8fafc",
-    color: "#374151",
-    border: "1px solid #e2e8f0",
-  },
   pageTitle: {
     color: "#1f2937",
   },
@@ -1821,8 +2231,8 @@ const lightTheme = {
     color: "#1f2937",
   },
   actionButton: {
-    backgroundColor: "white",
-    color: "#374151",
+    backgroundColor: "#dbeafe",
+    color: "#1d4ed8",
   },
   themeToggle: {
     backgroundColor: "white",
@@ -1830,7 +2240,9 @@ const lightTheme = {
     border: "1px solid #e2e8f0",
   },
   statCard: {
-    backgroundColor: "white",
+    background:
+      "linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%)",
+    border: "1px solid #93c5fd",
   },
   statValue: {
     color: "#1f2937",
@@ -1839,17 +2251,17 @@ const lightTheme = {
     color: "#6b7280",
   },
   quickActionsSection: {
-    backgroundColor: "white",
+    background: "linear-gradient(135deg, #fefbff 0%, #f8fafc 100%)",
   },
   quickActionCard: {
-    backgroundColor: "#f8fafc",
-    color: "#374151",
+    background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+    border: "1px solid #60a5fa",
   },
   sectionTitle: {
     color: "#1f2937",
   },
   chartSection: {
-    backgroundColor: "white",
+    background: "linear-gradient(135deg, #fefbff 0%, #f8fafc 100%)",
   },
   selectDropdown: {
     backgroundColor: "white",
@@ -1859,7 +2271,7 @@ const lightTheme = {
     color: "#6b7280",
   },
   tasksSection: {
-    backgroundColor: "white",
+    background: "linear-gradient(135deg, #fefbff 0%, #f8fafc 100%)",
   },
   taskItem: {
     backgroundColor: "#f8fafc",
@@ -1868,7 +2280,7 @@ const lightTheme = {
     color: "#1f2937",
   },
   calendarSection: {
-    backgroundColor: "white",
+    background: "linear-gradient(135deg, #fefbff 0%, #f8fafc 100%)",
   },
   eventItem: {
     backgroundColor: "#f8fafc",
@@ -1880,7 +2292,7 @@ const lightTheme = {
     color: "#1f2937",
   },
   performanceSection: {
-    backgroundColor: "white",
+    background: "linear-gradient(135deg, #fefbff 0%, #f8fafc 100%)",
   },
   progressValue: {
     color: "#1f2937",
@@ -1889,7 +2301,7 @@ const lightTheme = {
     color: "#6b7280",
   },
   teamSection: {
-    backgroundColor: "white",
+    background: "linear-gradient(135deg, #fefbff 0%, #f8fafc 100%)",
   },
   teamMember: {
     backgroundColor: "#f8fafc",
@@ -1901,13 +2313,13 @@ const lightTheme = {
     color: "#6b7280",
   },
   activitySection: {
-    backgroundColor: "white",
+    background: "linear-gradient(135deg, #fefbff 0%, #f8fafc 100%)",
   },
   activityItem: {
     backgroundColor: "#f8fafc",
   },
   activityIcon: {
-    backgroundColor: "white",
+    color: "#6b7280",
   },
   activityText: {
     color: "#1f2937",
@@ -1915,7 +2327,10 @@ const lightTheme = {
   activityTime: {
     color: "#6b7280",
   },
-}
+  viewAllButton: {
+    backgroundColor: "#3b82f6",
+  },
+};
 
 const darkTheme = {
   container: {
@@ -2123,6 +2538,9 @@ const darkTheme = {
   activityTime: {
     color: "#94a3b8",
   },
-}
+  viewAllButton: {
+    backgroundColor: "#3b82f6",
+  },
+};
 
-export default Dashboard
+export default Dashboard;

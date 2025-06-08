@@ -4,7 +4,6 @@ import Develop from "./Develop";
 import Dashboard from "./Dashboard";
 import Signup from "./Signup";
 
-
 function Linking() {
   return (
     <BrowserRouter>
@@ -18,4 +17,4 @@ function Linking() {
   );
 }
 
-export default Linking
+export default Linking;
